@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+.zoomed-overlay {
+  position: fixed; top:0; left:0;
+  width: 100%; height:100%;
+  background: rgba(0,0,0,0.8);
+  display:flex; justify-content:center; align-items:center;
+  z-index:1000;
+}
+.zoomed-overlay img {
+  max-width:90%; max-height:90%;
+  border-radius:10px;
+  box-shadow:0 0 20px rgba(255,255,255,0.6);
+}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- Header -->
+<header class="bg-orange-600 text-white sticky top-0 z-50 shadow">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="#" class="text-2xl font-bold">Susil Store Admin</a>
+    <div class="flex items-center gap-6 relative">
+      <button id="menuBtn" class="font-medium bg-white/10 hover:bg-white/20 rounded px-3 py-1">☰ Menu</button>
+      <div id="userMenu" class="absolute right-0 mt-12 w-48 bg-white text-gray-900 shadow-lg rounded-lg hidden">
+        <button class="w-full text-left px-4 py-2 hover:bg-gray-100" data-tab="productsTab">🛒 Products</button>
+        <a href="MyOrder.html" class="block px-4 py-2 hover:bg-gray-100">📦 My Orders</a>
+        <button id="logoutBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">🚪 Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+
+  <!-- Products Management -->
+  <section id="productsTab">
+    <h2 class="text-2xl font-bold mb-4">🛒 Manage Products</h2>
+
+    <form id="productForm" class="bg-white p-4 rounded shadow space-y-4 max-w-md">
+      <input type="hidden" id="productId">
+      <div>
+        <label class="block text-sm font-medium">Product Name</label>
+        <input type="text" id="productTitle" class="w-full border rounded px-3 py-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Price</label>
+        <input type="number" id="productPrice" class="w-full border rounded px-3 py-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Description</label>
+        <textarea id="productDesc" class="w-full border rounded px-3 py-2" rows="3"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Rating (1–5)</label>
+        <input type="number" id="productRating" min="1" max="5" class="w-full border rounded px-3 py-2">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Upload Image</label>
+        <input type="file" id="productImage" accept="image/*" class="w-full border rounded px-3 py-2">
+        <img id="previewImg" src="" class="mt-2 w-32 h-32 object-cover rounded hidden">
+      </div>
+      <button class="bg-orange-600 text-white px-4 py-2 rounded">Save Product</button>
+    </form>
+
+    <input type="text" id="searchInput" placeholder="Search products"
+           class="w-full mt-4 px-4 py-2 border rounded-lg">
+
+    <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-4"></div>
+  </section>
+
+</main>
+
+<script>
+let products = JSON.parse(localStorage.getItem('products')) || [];
+let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+// Elements
+const productForm = document.getElementById('productForm');
+const productId = document.getElementById('productId');
+const productTitle = document.getElementById('productTitle');
+const productPrice = document.getElementById('productPrice');
+const productDesc = document.getElementById('productDesc');
+const productRating = document.getElementById('productRating');
+const productImage = document.getElementById('productImage');
+const previewImg = document.getElementById('previewImg');
+const productGrid = document.getElementById('productGrid');
+const searchInput = document.getElementById('searchInput');
+const menuBtn = document.getElementById('menuBtn');
+const userMenu = document.getElementById('userMenu');
+const logoutBtn = document.getElementById('logoutBtn');
+
+// ----- IMAGE PREVIEW -----
+productImage.addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      previewImg.src = ev.target.result;
+      previewImg.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ----- ADD / EDIT PRODUCT -----
+productForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const title = productTitle.value;
+  const price = parseFloat(productPrice.value);
+  const desc = productDesc.value;
+  const rating = parseInt(productRating.value) || 0;
+  let imgSrc = previewImg.src || '';
+
+  if(productId.value){
+    // Edit
+    const index = products.findIndex(p=>p.id==productId.value);
+    products[index] = {...products[index], title, price, desc, rating, imgLocal: imgSrc};
+  } else {
+    // Add
+    const id = Date.now();
+    products.push({id,title,price,desc,rating,imgLocal:imgSrc});
+  }
+
+  localStorage.setItem('products', JSON.stringify(products));
+  renderProducts();
+  productForm.reset();
+  previewImg.classList.add('hidden');
+  productId.value='';
+});
+
+// ----- RENDER PRODUCTS -----
+function renderProducts(list=products){
+  productGrid.innerHTML='';
+  list.forEach(p=>{
+    const isInWishlist = wishlist.includes(p.id);
+
+    // Generate stars for rating
+    let stars = '';
+    for(let i=1;i<=5;i++){
+      stars += i <= p.rating ? '★' : '☆';
+    }
+
+    const card=document.createElement('div');
+    card.className="border rounded-lg shadow p-3 flex flex-col bg-white";
+    card.innerHTML=`
+      <img src="${p.imgLocal}" alt="${p.title}" class="w-full h-40 object-cover rounded mb-2 cursor-pointer" onclick="zoomImage('${p.imgLocal}')">
+      <h3 class="font-medium text-sm">${p.title}</h3>
+      <p class="text-xs text-gray-600 mt-1 flex-1">${p.desc || ''}</p>
+      <p class="font-semibold mt-1">$${p.price.toFixed(2)}</p>
+      <p class="text-yellow-500 mt-1">${stars}</p>
+      <div class="mt-2 flex gap-2 flex-wrap">
+        <button class="bg-green-600 text-white px-2 py-1 rounded" onclick="editProduct(${p.id})">Edit</button>
+        <button class="bg-red-600 text-white px-2 py-1 rounded" onclick="deleteProduct(${p.id})">Delete</button>
+        <button class="px-2 py-1 rounded ${isInWishlist ? 'bg-yellow-500 text-white' : 'bg-gray-200'}"
+                onclick="toggleWishlist(${p.id})">
+          ${isInWishlist ? '★ In Wishlist' : '☆ Wishlist'}
+        </button>
+      </div>
+    `;
+    productGrid.appendChild(card);
+  });
+}
+
+// ----- SEARCH PRODUCTS -----
+searchInput.addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase();
+  renderProducts(products.filter(p=>p.title.toLowerCase().includes(q)));
+});
+
+// ----- EDIT / DELETE -----
+function editProduct(id){
+  const p = products.find(p=>p.id===id);
+  productId.value = p.id;
+  productTitle.value = p.title;
+  productPrice.value = p.price;
+  productDesc.value = p.desc || '';
+  productRating.value = p.rating || '';
+  previewImg.src = p.imgLocal;
+  previewImg.classList.remove('hidden');
+}
+
+function deleteProduct(id){
+  if(confirm("Are you sure?")){
+    products = products.filter(p=>p.id!==id);
+    localStorage.setItem('products', JSON.stringify(products));
+    renderProducts();
+  }
+}
+
+// ----- WISHLIST -----
+function toggleWishlist(id){
+  if(wishlist.includes(id)){
+    wishlist = wishlist.filter(w=>w!==id);
+  } else {
+    wishlist.push(id);
+  }
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  renderProducts();
+}
+
+// ----- MENU TOGGLE -----
+menuBtn.addEventListener('click',()=>userMenu.classList.toggle('hidden'));
+
+// ----- IMAGE ZOOM -----
+function zoomImage(src){
+  const overlay=document.createElement('div');
+  overlay.className="zoomed-overlay";
+  overlay.innerHTML=`<img src="${src}" alt="zoomed">`;
+  document.body.appendChild(overlay);
+  overlay.onclick=()=>overlay.remove();
+}
+
+// ----- LOGOUT -----
+logoutBtn.addEventListener('click', ()=>{
+  localStorage.removeItem('isAdminLoggedIn'); // Clear login state
+  alert("You have been logged out.");
+  window.location.href = "../index.html"; // Redirect to store homepage
+});
+
+// Init
+renderProducts();
+</script>
+</body>
+</html>

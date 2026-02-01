@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Wishlist</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Header -->
+  <header class="bg-orange-600 text-white sticky top-0 z-50 shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="dashboard.html" class="text-2xl font-bold">Susil Store</a>
+      <a href="dashboard.html" class="bg-white/10 hover:bg-white/20 rounded px-3 py-1">🏠 Dashboard</a>
+    </div>
+  </header>
+
+  <!-- Wishlist -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6">⭐ My Wishlist</h2>
+    <div id="wishlistGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"></div>
+    <p id="emptyMessage" class="text-gray-600 hidden">Your wishlist is empty.</p>
+  </main>
+
+  <script>
+    let products = JSON.parse(localStorage.getItem("products")) || [];
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const wishlistGrid = document.getElementById("wishlistGrid");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    // ----- RENDER WISHLIST -----
+    function renderWishlist() {
+      wishlistGrid.innerHTML = "";
+      if (wishlist.length === 0) {
+        emptyMessage.classList.remove("hidden");
+        return;
+      } else {
+        emptyMessage.classList.add("hidden");
+      }
+
+      wishlist.forEach(id => {
+        const p = products.find(prod => prod.id === id);
+        if (!p) return;
+
+        // Generate rating stars
+        let stars = "";
+        for (let i = 1; i <= 5; i++) {
+          stars += i <= (p.rating || 0) ? "★" : "☆";
+        }
+
+        const card = document.createElement("div");
+        card.className = "border rounded-lg shadow hover:shadow-lg transition bg-white p-3 flex flex-col";
+
+        card.innerHTML = `
+          <a href="product.html?id=${p.id}" target="_blank">
+            <img src="${p.imgLocal || p.img}" alt="${p.title}"
+              class="w-full h-40 object-cover rounded mb-2 cursor-pointer">
+          </a>
+          <a href="product.html?id=${p.id}" target="_blank" class="font-medium text-sm hover:underline">
+            ${p.title}
+          </a>
+          <p class="text-xs text-gray-600 mt-1 flex-1">${p.desc || ""}</p>
+          <p class="font-semibold mt-1">$${p.price.toFixed(2)}</p>
+          <p class="text-yellow-500 mt-1">${stars}</p>
+          <div class="mt-2 flex gap-2 flex-wrap">
+            <button onclick="addToCart(${p.id})"
+              class="bg-orange-600 text-white px-2 py-1 rounded hover:bg-orange-700">
+              Add to Cart
+            </button>
+            <button onclick="removeFromWishlist(${p.id})"
+              class="bg-red-600 text-white px-2 py-1 rounded">
+              Remove
+            </button>
+          </div>
+        `;
+        wishlistGrid.appendChild(card);
+      });
+    }
+
+    // ----- ADD TO CART -----
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      if (product) {
+        cart.push(product);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert("Added to cart!");
+      }
+    }
+
+    // ----- REMOVE FROM WISHLIST -----
+    function removeFromWishlist(productId) {
+      wishlist = wishlist.filter(id => id !== productId);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      renderWishlist();
+    }
+
+    // Init
+    renderWishlist();
+  </script>
+</body>
+</html>

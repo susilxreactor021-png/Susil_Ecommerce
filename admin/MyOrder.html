@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - All Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Header -->
+  <header class="bg-red-600 text-white p-4 text-center text-xl font-bold shadow">
+    Admin - All Orders
+  </header>
+
+  <main class="max-w-6xl mx-auto p-6">
+    <div id="ordersList" class="space-y-6"></div>
+  </main>
+
+  <script>
+    const ordersList = document.getElementById("ordersList");
+    // In real admin, you would fetch all orders from server
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+    function updateOrderStatus(orderId, newStatus) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        localStorage.setItem("orders", JSON.stringify(orders));
+        renderOrders();
+      }
+    }
+
+    function deleteOrder(orderId) {
+      const index = orders.findIndex(o => o.id === orderId);
+      if (index !== -1) {
+        orders.splice(index, 1);
+        localStorage.setItem("orders", JSON.stringify(orders));
+        renderOrders();
+      }
+    }
+
+    function renderOrders() {
+      if (orders.length === 0) {
+        ordersList.innerHTML = `<div class="text-center text-gray-500">
+          <p class="mb-2">📦 No orders found.</p>
+        </div>`;
+        return;
+      }
+
+      ordersList.innerHTML = "";
+      orders.slice().reverse().forEach(order => {
+        const div = document.createElement("div");
+        div.className = "bg-white p-5 rounded-2xl shadow border-l-4 " + (order.status === "Paid" ? "border-green-500" : "border-yellow-500");
+
+        let itemsHTML = "";
+        const grouped = {};
+        order.items.forEach(item => {
+          if (!grouped[item.id]) grouped[item.id] = { ...item, qty: 0 };
+          grouped[item.id].qty++;
+        });
+        Object.values(grouped).forEach(item => {
+          itemsHTML += `<div class="flex justify-between text-sm">
+                          <span>${item.title} × ${item.qty}</span>
+                          <span>$${(item.price * item.qty).toFixed(2)}</span>
+                        </div>`;
+        });
+
+        div.innerHTML = `
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold">Order #${order.id}</h3>
+            <span class="text-sm text-gray-500">${order.date}</span>
+          </div>
+          <div class="mb-3 space-y-1">${itemsHTML}</div>
+          <p class="font-semibold">Total: $${order.total.toFixed(2)}</p>
+          <p class="text-sm text-gray-600 mt-2">Shipping: ${order.shipping.name}, ${order.shipping.address}, ${order.shipping.city} (${order.shipping.zip})</p>
+          <p class="text-sm mt-1">Payment: <span class="font-medium">${order.payment.toUpperCase()}</span></p>
+          <p class="text-sm">Status: 
+            <select onchange="updateOrderStatus(${order.id}, this.value)" class="font-bold ${order.status === 'Paid' ? 'text-green-600' : 'text-yellow-600'}">
+              <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="Paid" ${order.status === 'Paid' ? 'selected' : ''}>Paid</option>
+              <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+              <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </p>
+          <button onclick="deleteOrder(${order.id})" class="mt-3 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">Delete Order</button>
+        `;
+        ordersList.appendChild(div);
+      });
+    }
+
+    renderOrders();
+  </script>
+</body>
+</html>
