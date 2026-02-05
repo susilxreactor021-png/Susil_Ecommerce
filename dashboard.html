@@ -1,235 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>MyStore | User Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --primary:#0a3d91;
+  --bg:#f4f6fa;
+  --card:#ffffff;
+  --text:#1e293b;
+  --muted:#64748b;
+  --yellow:#facc15;
+  --danger:#dc2626;
+  --success:#16a34a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  font-family:Segoe UI,Arial,sans-serif;
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  background:var(--primary);
+  color:white;
+  padding:14px 22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.logo{font-size:20px;font-weight:600}
+.header-right{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+.icon-btn{
+  position:relative;
+  cursor:pointer;
+  font-size:20px;
+}
+.icon-btn span{
+  position:absolute;
+  top:-6px;
+  right:-8px;
+  background:var(--yellow);
+  color:black;
+  border-radius:50%;
+  padding:2px 6px;
+  font-size:12px;
+}
+
+/* PROFILE MENU */
+.profile{
+  position:relative;
+  cursor:pointer;
+}
+.profile img{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:2px solid white;
+}
+.menu{
+  position:absolute;
+  right:0;
+  top:55px;
+  background:var(--card);
+  border-radius:16px;
+  width:220px;
+  box-shadow:0 20px 40px rgba(0,0,0,.25);
+  display:none;
+  overflow:hidden;
+}
+.menu a{
+  display:block;
+  padding:14px 16px;
+  color:var(--text);
+  text-decoration:none;
+  font-size:14px;
+}
+.menu a:hover{background:#f1f5f9}
+.profile.open .menu{display:block}
+
+/* LAYOUT */
+.container{
+  max-width:1400px;
+  margin:auto;
+  padding:26px;
+}
+
+/* USER CARD */
+.user-card{
+  background:var(--card);
+  border-radius:20px;
+  padding:22px;
+  display:flex;
+  gap:22px;
+  align-items:center;
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+}
+.user-card img{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+}
+.badge{
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+}
+.active{background:#dcfce7;color:#166534}
+
+/* SECTIONS */
+.section{
+  margin-top:40px;
+}
+.section h3{
+  margin-bottom:16px;
+}
+
+/* PRODUCTS */
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:22px;
+}
+.card{
+  background:var(--card);
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.1);
+  display:flex;
+  flex-direction:column;
+  transition:.3s;
+}
+.card:hover{transform:translateY(-6px)}
+.card img{
+  height:180px;
+  object-fit:cover;
+  border-radius:12px;
+}
+.price{color:var(--primary);font-weight:700}
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:auto;
+}
+.actions button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+}
+.buy{background:var(--primary);color:white}
+.wish{background:#fee2e2;color:#991b1b}
+
+/* CART */
+.cart{
+  position:fixed;
+  top:0;
+  right:-380px;
+  width:360px;
+  height:100%;
+  background:white;
+  box-shadow:-6px 0 25px rgba(0,0,0,.3);
+  transition:.3s;
+  display:flex;
+  flex-direction:column;
+  z-index:200;
+}
+.cart.open{right:0}
+.cart-header{
+  background:var(--primary);
+  color:white;
+  padding:16px;
+  display:flex;
+  justify-content:space-between;
+}
+.cart-body{flex:1;overflow:auto;padding:16px}
+.cart-footer{
+  padding:16px;
+  border-top:1px solid #e5e7eb;
+}
+.cart-footer button{
+  width:100%;
+  padding:14px;
+  background:var(--primary);
+  color:white;
+  border:none;
+  border-radius:12px;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--success);
+  color:white;
+  padding:14px 22px;
+  border-radius:30px;
+  opacity:0;
+  transition:.3s;
+}
+.toast.show{opacity:1;bottom:50px}
+</style>
 </head>
-<body class="bg-gray-50 text-gray-900">
 
-  <!-- Header -->
-  <header class="bg-orange-600 text-white sticky top-0 z-50 shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="dashboard.html" class="text-2xl font-bold">Susil Store</a>
+<body>
 
-      <!-- Search -->
-      <div class="flex-1 mx-6 hidden md:block">
-        <input type="text" id="searchInput" placeholder="Search in Store"
-          class="w-full px-4 py-2 rounded-lg text-gray-900 outline-none border border-gray-200" />
-      </div>
-
-      <!-- Cart & Dropdown -->
-      <div class="flex items-center gap-6">
-        <!-- Cart -->
-        <button id="cartBtn" class="relative text-2xl">
-          🛒
-          <span id="cartCount"
-            class="absolute -top-2 -right-2 bg-yellow-400 text-blue-900 text-xs px-1.5 py-0.5 rounded-full">0</span>
-        </button>
-
-        <!-- Dropdown -->
-        <div class="relative">
-          <button id="menuBtn" class="font-medium bg-white/10 hover:bg-white/20 rounded px-3 py-1"
-            aria-haspopup="menu" aria-expanded="false" aria-controls="userMenu">☰ Menu</button>
-          <div id="userMenu"
-            class="absolute right-0 mt-2 w-48 bg-white text-gray-900 shadow-lg rounded-lg hidden"
-            role="menu" tabindex="-1">
-            <a href="profile.html" class="block px-4 py-2 hover:bg-gray-100">👤 Profile</a>
-            <a href="orders.html" class="block px-4 py-2 hover:bg-gray-100">📦 My Orders</a>
-            <a href="payment.html" class="block px-4 py-2 hover:bg-gray-100">💳 Payment</a>
-            <a href="wishlist.html" class="block px-4 py-2 hover:bg-gray-100">⭐ Wishlist</a>
-            <a href="index.html" class="block px-4 py-2 hover:bg-gray-100 text-red-600">🚪 Logout</a>
-          </div>
-        </div>
+<header>
+  <div class="logo"><i class="fa fa-store"></i> MyStore</div>
+  <div class="header-right">
+    <div class="icon-btn" onclick="openCart()">
+      <i class="fa fa-cart-shopping"></i>
+      <span id="cartCount">0</span>
+    </div>
+    <div class="profile" onclick="toggleProfile()">
+      <img id="avatar">
+      <div class="menu">
+        <a href="#">My Profile</a>
+        <a href="#">My Orders</a>
+        <a href="#" onclick="logout()">Logout</a>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- Products -->
-  <main class="max-w-7xl mx-auto px-4 py-8">
-    <h2 class="text-2xl font-bold mb-6">Products</h2>
-    <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"></div>
-  </main>
+<div class="container">
 
-  <!-- Cart Drawer -->
-  <div id="cartDrawer"
-    class="fixed top-0 right-0 w-80 h-full bg-white shadow-xl transform translate-x-full transition-transform duration-300 z-50">
-    <div class="p-4 flex justify-between items-center border-b">
-      <h3 class="text-lg font-bold">My Cart</h3>
-      <button id="closeCartBtn" class="text-gray-600 hover:text-gray-900">✕</button>
-    </div>
-    <div id="cartItems" class="p-4 space-y-4 overflow-y-auto h-[calc(100%-140px)]"></div>
-    <div class="p-4 border-t">
-      <p class="font-semibold">Total: $<span id="cartTotal">0.00</span></p>
-      <button id="checkoutBtn"
-        class="w-full mt-3 bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700">
-        Checkout
-      </button>
+  <!-- USER PROFILE -->
+  <div class="user-card">
+    <img id="profilePic">
+    <div>
+      <h2 id="userName"></h2>
+      <p id="userEmail" class="muted"></p>
+      <span class="badge active">Active User</span>
     </div>
   </div>
 
-  <!-- Loading Spinner -->
-  <div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-    <div class="text-white text-lg animate-pulse">Processing...</div>
+  <!-- PRODUCTS -->
+  <div class="section">
+    <h3>Recommended Products</h3>
+    <div class="products" id="products"></div>
   </div>
 
-  <script>
-    // ----- DATA -----
-    let products = JSON.parse(localStorage.getItem("products")) || [];
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+</div>
 
-    // ----- ELEMENTS -----
-    const grid = document.getElementById("productGrid");
-    const searchInput = document.getElementById("searchInput");
-    const cartDrawer = document.getElementById("cartDrawer");
-    const cartBtn = document.getElementById("cartBtn");
-    const closeCartBtn = document.getElementById("closeCartBtn");
-    const cartItemsContainer = document.getElementById("cartItems");
-    const cartCount = document.getElementById("cartCount");
-    const cartTotal = document.getElementById("cartTotal");
-    const checkoutBtn = document.getElementById("checkoutBtn");
-    const loadingSpinner = document.getElementById("loadingSpinner");
-    const menuBtn = document.getElementById("menuBtn");
-    const userMenu = document.getElementById("userMenu");
+<!-- CART -->
+<div class="cart" id="cart">
+  <div class="cart-header">
+    <h3>Your Cart</h3>
+    <i class="fa fa-xmark" onclick="closeCart()"></i>
+  </div>
+  <div class="cart-body" id="cartItems"></div>
+  <div class="cart-footer">
+    <strong>Total: $<span id="total">0</span></strong>
+    <button>Checkout</button>
+  </div>
+</div>
 
-    // ----- RENDER PRODUCTS -----
-    function renderProducts(list) {
-      grid.innerHTML = "";
-      list.forEach((p) => {
-        const isInWishlist = wishlist.includes(p.id);
+<div class="toast" id="toast">Added to cart</div>
 
-        // Generate rating stars
-        let stars = "";
-        for (let i = 1; i <= 5; i++) {
-          stars += i <= (p.rating || 0) ? "★" : "☆";
-        }
+<script>
+let products=JSON.parse(localStorage.getItem("products"))||[];
+let cart=JSON.parse(localStorage.getItem("cart"))||[];
 
-        const card = document.createElement("div");
-        card.className = "border rounded-lg shadow hover:shadow-lg transition bg-white p-3 flex flex-col cursor-pointer";
+function renderProducts(){
+  productsBox.innerHTML="";
+  products.forEach((p,i)=>{
+    productsBox.innerHTML+=`
+    <div class="card">
+      <img src="${p.image||p.img||'https://via.placeholder.com/300'}">
+      <h4>${p.name}</h4>
+      <div class="price">$${p.price}</div>
+      <div class="actions">
+        <button class="buy" onclick="addToCart(${i})">Add</button>
+        <button class="wish">❤</button>
+      </div>
+    </div>`;
+  });
+}
 
-        card.innerHTML = `
-          <div class="relative">
-            <a href="product.html?id=${p.id}" target="_blank">
-              <img src="${p.imgLocal || p.img}" alt="${p.title}"
-                class="w-full h-40 object-cover rounded-md mb-2">
-            </a>
-          </div>
-          <a href="product.html?id=${p.id}" target="_blank" class="font-medium text-sm hover:underline">
-            ${p.title}
-          </a>
-          <p class="text-xs text-gray-600 mt-1 flex-1">${p.desc || ""}</p>
-          <p class="font-semibold mt-1">$${p.price.toFixed(2)}</p>
-          <p class="text-yellow-500 mt-1">${stars}</p>
-          <div class="mt-2 flex gap-2 flex-wrap">
-            <button type="button" onclick="addToCart(${p.id})"
-              class="bg-orange-600 text-white px-2 py-1 rounded hover:bg-orange-700">
-              Add to Cart
-            </button>
-            <button class="px-2 py-1 rounded ${isInWishlist ? "bg-yellow-500 text-white" : "bg-gray-200"}"
-              onclick="toggleWishlist(${p.id})">
-              ${isInWishlist ? "★ In Wishlist" : "☆ Wishlist"}
-            </button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
+function addToCart(i){
+  const p=products[i];
+  const f=cart.find(c=>c.name===p.name);
+  f?f.qty++:cart.push({...p,qty:1});
+  saveCart();toast();
+}
 
-    // ----- CART -----
-    function addToCart(productId) {
-      const product = products.find(p => p.id === productId);
-      if (product) {
-        cart.push(product);
-        updateCart();
-      }
-    }
+function saveCart(){
+  localStorage.setItem("cart",JSON.stringify(cart));
+  cartCount.innerText=cart.reduce((a,b)=>a+b.qty,0);
+}
 
-    function removeFromCart(i) {
-      cart.splice(i, 1);
-      updateCart();
-    }
+function openCart(){cartEl.classList.add("open");renderCart()}
+function closeCart(){cartEl.classList.remove("open")}
 
-    function updateCart() {
-      cartItemsContainer.innerHTML = "";
-      let total = 0;
-      cart.forEach((item, i) => {
-        total += item.price;
-        const div = document.createElement("div");
-        div.className = "flex items-center justify-between border-b pb-2";
-        div.innerHTML = `
-          <div>
-            <p class="font-medium text-sm">${item.title}</p>
-            <p class="text-xs text-gray-500">$${item.price.toFixed(2)}</p>
-          </div>
-          <button class="text-red-600 text-sm" onclick="removeFromCart(${i})">Remove</button>
-        `;
-        cartItemsContainer.appendChild(div);
-      });
-      cartCount.textContent = cart.length;
-      cartTotal.textContent = total.toFixed(2);
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
+function renderCart(){
+  cartItems.innerHTML="";
+  let total=0;
+  cart.forEach(c=>{
+    total+=c.price*c.qty;
+    cartItems.innerHTML+=`<div>${c.name} × ${c.qty}</div>`;
+  });
+  totalEl.innerText=total;
+}
 
-    // ----- WISHLIST -----
-    function toggleWishlist(id) {
-      if (wishlist.includes(id)) {
-        wishlist = wishlist.filter(w => w !== id);
-      } else {
-        wishlist.push(id);
-      }
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
-      renderProducts(products);
-    }
+function toast(){
+  const t=document.getElementById("toast");
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2000);
+}
 
-    // ----- SEARCH -----
-    searchInput?.addEventListener("input", (e) => {
-      const q = e.target.value.toLowerCase();
-      renderProducts(products.filter(p => p.title.toLowerCase().includes(q)));
-    });
+function toggleProfile(){
+  document.querySelector(".profile").classList.toggle("open");
+}
 
-    // ----- CART TOGGLE -----
-    cartBtn.addEventListener("click", () => cartDrawer.classList.remove("translate-x-full"));
-    closeCartBtn.addEventListener("click", () => cartDrawer.classList.add("translate-x-full"));
+const productsBox=document.getElementById("products");
+const cartEl=document.getElementById("cart");
+const cartItems=document.getElementById("cartItems");
+const totalEl=document.getElementById("total");
 
-    // ----- CHECKOUT -----
-    checkoutBtn.addEventListener("click", () => {
-      localStorage.setItem("cart", JSON.stringify(cart));
-      loadingSpinner.classList.remove("hidden");
-      setTimeout(() => {
-        loadingSpinner.classList.add("hidden");
-        window.location.href = "checkout.html";
-      }, 1500);
-    });
+renderProducts();saveCart();
+</script>
 
-    // ----- DROPDOWN MENU -----
-    function openMenu() {
-      userMenu.classList.remove("hidden");
-      menuBtn.setAttribute("aria-expanded", "true");
-    }
-    function closeMenu() {
-      userMenu.classList.add("hidden");
-      menuBtn.setAttribute("aria-expanded", "false");
-    }
-    function toggleMenu(e) {
-      e.stopPropagation();
-      userMenu.classList.contains("hidden") ? openMenu() : closeMenu();
-    }
+<!-- FIREBASE AUTH -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore,doc,getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    menuBtn.addEventListener("click", toggleMenu);
-    userMenu.addEventListener("click", (e) => e.stopPropagation());
-    document.addEventListener("click", (e) => {
-      if (!userMenu.contains(e.target) && e.target !== menuBtn) closeMenu();
-    });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
-    Array.from(userMenu.querySelectorAll("a")).forEach(a =>
-      a.addEventListener("click", () => closeMenu())
-    );
+const firebaseConfig={
+  apiKey:"AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
+  authDomain:"susil-store.firebaseapp.com",
+  projectId:"susil-store"
+};
 
-    // ----- INIT -----
-    renderProducts(products);
-    updateCart();
-  </script>
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+onAuthStateChanged(auth,async user=>{
+  if(!user) location.href="index.html";
+
+  avatar.src=user.photoURL;
+  profilePic.src=user.photoURL;
+  userName.innerText=user.displayName;
+  userEmail.innerText=user.email;
+
+  const snap=await getDoc(doc(db,"users",user.uid));
+  if(!snap.exists()) console.warn("User doc missing");
+});
+
+window.logout=async()=>{
+  await signOut(auth);
+  localStorage.clear();
+  location.href="index.html";
+};
+</script>
+
 </body>
 </html>

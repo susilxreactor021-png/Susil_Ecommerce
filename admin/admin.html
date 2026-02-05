@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyStore Admin Dashboard</title>
+
+<!-- FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Segoe UI", Arial, sans-serif;
+}
+
+body{
+  background:#f4f6f9;
+  color:#222;
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+.admin-container{
+  display:flex;
+  min-height:100vh;
+}
+
+/* =========================================================
+   SIDEBAR (SAME AS ANALYTICS)
+========================================================= */
+.sidebar{
+  width:270px;
+  background:linear-gradient(180deg,#0b5ed7,#0a3d91);
+  color:white;
+  padding:24px 18px;
+}
+
+.sidebar h2{
+  text-align:center;
+  margin-bottom:40px;
+  letter-spacing:1px;
+}
+
+.sidebar a{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  margin-bottom:12px;
+  border-radius:14px;
+  color:white;
+  text-decoration:none;
+  transition:.25s;
+}
+
+.sidebar a i{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.18);
+  border-radius:10px;
+}
+
+.sidebar a:hover{
+  background:rgba(255,255,255,.18);
+  transform:translateX(6px);
+}
+
+.sidebar a.active{
+  background:white;
+  color:#0b5ed7;
+  font-weight:600;
+}
+
+.sidebar a.active i{
+  background:#0b5ed7;
+  color:white;
+}
+
+/* =========================================================
+   MAIN AREA
+========================================================= */
+.main{
+  flex:1;
+  padding:25px;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+.header{
+  background:#fff;
+  padding:18px 22px;
+  border-radius:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+  box-shadow:0 6px 16px rgba(0,0,0,.06);
+}
+
+.header h3{
+  font-size:20px;
+}
+
+.header span{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+.card{
+  background:#fff;
+  padding:25px;
+  border-radius:18px;
+  margin-bottom:25px;
+  box-shadow:0 8px 20px rgba(0,0,0,.05);
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+
+input,
+select,
+textarea{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  width:100%;
+}
+
+textarea{
+  grid-column:1/-1;
+  height:90px;
+  resize:none;
+}
+
+.save-btn{
+  margin-top:18px;
+  padding:12px 20px;
+  border-radius:10px;
+  border:none;
+  background:#0b5ed7;
+  color:white;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.save-btn:hover{
+  background:#094bb5;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:14px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+}
+
+th{
+  background:#f1f4f8;
+}
+
+tbody tr:hover{
+  background:#f8fafc;
+}
+
+.product-img{
+  width:60px;
+  height:60px;
+  border-radius:10px;
+  object-fit:cover;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+.action-btn{
+  padding:6px 12px;
+  border-radius:8px;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+
+.edit{
+  background:#22c55e;
+}
+
+.delete{
+  background:#ef4444;
+}
+
+/* =========================================================
+   BADGES
+========================================================= */
+.badge{
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.active{
+  background:#d1fae5;
+  color:#065f46;
+}
+
+.inactive{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+#search{
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  width:100%;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+@media(max-width:768px){
+
+  .sidebar{
+    display:none;
+  }
+
+  table,thead,tbody,th,td,tr{
+    display:block;
+  }
+
+  thead{
+    display:none;
+  }
+
+  tbody tr{
+    background:white;
+    margin-bottom:15px;
+    padding:15px;
+    border-radius:15px;
+  }
+
+  td{
+    display:flex;
+    justify-content:space-between;
+  }
+
+  td::before{
+    content:attr(data-label);
+    font-weight:600;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="admin-container">
+
+<!-- ======================================================
+     SIDEBAR
+====================================================== -->
+<div class="sidebar">
+  <h2>MyStore</h2>
+
+  <a href="admin.html" class="active">
+    <i class="fa fa-box"></i> Products
+  </a>
+
+  <a href="adminorder.html">
+    <i class="fa fa-cart-shopping"></i> Orders
+  </a>
+
+  <a href="users.html">
+    <i class="fa fa-users"></i> Users
+  </a>
+
+  <a href="Analytics.html">
+    <i class="fa fa-chart-line"></i> Analytics
+  </a>
+
+  <a href="Settings.html">
+    <i class="fa fa-gear"></i> Settings
+  </a>
+</div>
+
+<!-- ======================================================
+     MAIN
+====================================================== -->
+<div class="main">
+
+<!-- HEADER -->
+<div class="header">
+  <h3>Product Management</h3>
+  <span><i class="fa fa-user"></i> Admin</span>
+</div>
+
+<!-- ADD PRODUCT -->
+<div class="card">
+<h3 id="formTitle">Add Product</h3>
+<br>
+
+<div class="form-grid">
+  <input id="name" placeholder="Product Name">
+  <input id="price" type="number" placeholder="Price">
+  <input id="stock" type="number" placeholder="Stock">
+
+  <select id="category">
+    <option>Electronics</option>
+    <option>Fashion</option>
+    <option>Accessories</option>
+  </select>
+
+  <select id="status">
+    <option>Active</option>
+    <option>Inactive</option>
+  </select>
+
+  <input type="file" id="image">
+  <textarea id="desc" placeholder="Description"></textarea>
+</div>
+
+<button class="save-btn" id="saveBtn" onclick="saveProduct()">Save Product</button>
+</div>
+
+<!-- PRODUCTS TABLE -->
+<div class="card">
+<h3>All Products</h3>
+<br>
+
+<input id="search" placeholder="🔍 Search product">
+
+<br><br>
+
+<table>
+<thead>
+<tr>
+  <th>Image</th>
+  <th>Name</th>
+  <th>Price</th>
+  <th>Stock</th>
+  <th>Category</th>
+  <th>Status</th>
+  <th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="productTable"></tbody>
+</table>
+</div>
+
+</div>
+</div>
+
+<!-- ======================================================
+     SCRIPT
+====================================================== -->
+<script>
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
+let editIndex = null;
+
+const nameInput = document.getElementById("name");
+const priceInput = document.getElementById("price");
+const stockInput = document.getElementById("stock");
+const categoryInput = document.getElementById("category");
+const statusInput = document.getElementById("status");
+const imageInput = document.getElementById("image");
+const descInput = document.getElementById("desc");
+const table = document.getElementById("productTable");
+
+function saveProduct(){
+
+  if(!nameInput.value.trim()){
+    alert("Product name required");
+    return;
+  }
+
+  const oldImg = editIndex !== null ? products[editIndex].img : "";
+
+  const save = img => {
+
+    const data = {
+      name:nameInput.value,
+      price:priceInput.value,
+      stock:stockInput.value,
+      category:categoryInput.value,
+      status:statusInput.value,
+      desc:descInput.value,
+      img:img
+    };
+
+    if(editIndex !== null){
+      products[editIndex] = data;
+      editIndex = null;
+    }else{
+      products.push(data);
+    }
+
+    localStorage.setItem("products",JSON.stringify(products));
+    clearForm();
+    render();
+  };
+
+  if(imageInput.files[0]){
+    const r = new FileReader();
+    r.onload = () => save(r.result);
+    r.readAsDataURL(imageInput.files[0]);
+  }else{
+    save(oldImg);
+  }
+}
+
+function render(){
+
+  table.innerHTML="";
+  const search = document.getElementById("search").value.toLowerCase();
+
+  products.forEach((p,i)=>{
+
+    if(!p.name.toLowerCase().includes(search)) return;
+
+    table.innerHTML += `
+    <tr>
+      <td data-label="Image">
+        ${p.img ? `<img src="${p.img}" class="product-img">` : "-"}
+      </td>
+      <td data-label="Name">${p.name}</td>
+      <td data-label="Price">$${p.price}</td>
+      <td data-label="Stock">${p.stock}</td>
+      <td data-label="Category">${p.category}</td>
+      <td data-label="Status">
+        <span class="badge ${p.status==="Active"?"active":"inactive"}"
+        onclick="toggleStatus(${i})">${p.status}</span>
+      </td>
+      <td data-label="Actions">
+        <button class="action-btn edit" onclick="editProduct(${i})">Edit</button>
+        <button class="action-btn delete" onclick="del(${i})">Delete</button>
+      </td>
+    </tr>
+    `;
+  });
+}
+
+function editProduct(i){
+  const p = products[i];
+
+  nameInput.value = p.name;
+  priceInput.value = p.price;
+  stockInput.value = p.stock;
+  categoryInput.value = p.category;
+  statusInput.value = p.status;
+  descInput.value = p.desc;
+
+  editIndex = i;
+
+  document.getElementById("formTitle").innerText = "Edit Product";
+  document.getElementById("saveBtn").innerText = "Update Product";
+}
+
+function toggleStatus(i){
+  products[i].status =
+    products[i].status === "Active" ? "Inactive" : "Active";
+
+  localStorage.setItem("products",JSON.stringify(products));
+  render();
+}
+
+function del(i){
+  if(confirm("Delete product?")){
+    products.splice(i,1);
+    localStorage.setItem("products",JSON.stringify(products));
+    render();
+  }
+}
+
+function clearForm(){
+  nameInput.value="";
+  priceInput.value="";
+  stockInput.value="";
+  descInput.value="";
+  imageInput.value="";
+
+  document.getElementById("formTitle").innerText = "Add Product";
+  document.getElementById("saveBtn").innerText = "Save Product";
+}
+
+document.getElementById("search").addEventListener("input",render);
+render();
+
+</script>
+
+</body>
+</html>

@@ -6,64 +6,150 @@
   <title>My Orders</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-50 text-gray-900">
 
-  <!-- Header -->
-  <header class="bg-orange-600 text-white p-4 text-center text-xl font-bold shadow">
-    My Orders
-  </header>
+<!-- ================= HEADER ================= -->
+<header class="bg-orange-600 text-white p-4 text-center text-xl font-bold shadow">
+  My Orders
+</header>
 
-  <main class="max-w-6xl mx-auto p-6">
-    <div id="ordersList" class="space-y-6"></div>
-  </main>
+<!-- ================= MAIN ================= -->
+<main class="max-w-6xl mx-auto p-6">
+  <div id="ordersList" class="space-y-6"></div>
+</main>
 
-  <script>
-    const ordersList = document.getElementById("ordersList");
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+<!-- ================= SCRIPT ================= -->
+<script>
+const ordersList = document.getElementById("ordersList");
 
-    function renderOrders() {
-      if (orders.length === 0) {
-        ordersList.innerHTML = `<div class="text-center text-gray-500">
-          <p class="mb-2">📦 No orders found.</p>
-          <a href="dashboard.html" class="text-orange-600 font-semibold underline">Continue Shopping</a>
-        </div>`;
-        return;
+/* ---------- LOAD & NORMALIZE ORDERS ---------- */
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+orders = orders.map(order => ({
+  id: order.id || Date.now(),
+  date: order.date || new Date().toLocaleString(),
+  status: order.status || "Pending",
+  payment: order.payment || "COD",
+  total: Number(order.total) || 0,
+
+  items: Array.isArray(order.items)
+    ? order.items.map(item => ({
+        id: item.id || crypto.randomUUID(),
+        title: item.title || item.name || "Product",
+        price: Number(item.price) || 0,
+        img: item.img || item.imgLocal || "https://via.placeholder.com/60"
+      }))
+    : [],
+
+  shipping: {
+    name: order.shipping?.name || "N/A",
+    address: order.shipping?.address || "N/A",
+    city: order.shipping?.city || "N/A",
+    zip: order.shipping?.zip || "N/A"
+  }
+}));
+
+localStorage.setItem("orders", JSON.stringify(orders));
+
+/* ---------- RENDER ORDERS ---------- */
+function renderOrders() {
+
+  if (!orders.length) {
+    ordersList.innerHTML = `
+      <div class="text-center text-gray-500 mt-20">
+        <p class="text-xl mb-3">📦 No orders found</p>
+        <a href="dashboard.html"
+          class="text-orange-600 font-semibold underline">
+          Continue Shopping
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  ordersList.innerHTML = "";
+
+  orders.slice().reverse().forEach(order => {
+
+    /* GROUP ITEMS BY ID */
+    const grouped = {};
+    order.items.forEach(item => {
+      if (!grouped[item.id]) {
+        grouped[item.id] = { ...item, qty: 0 };
       }
+      grouped[item.id].qty++;
+    });
 
-      ordersList.innerHTML = "";
-      orders.slice().reverse().forEach(order => {
-        const div = document.createElement("div");
-        div.className = "bg-white p-5 rounded-2xl shadow border-l-4 " + (order.status === "Paid" ? "border-green-500" : "border-yellow-500");
-
-        let itemsHTML = "";
-        const grouped = {};
-        order.items.forEach(item => {
-          if (!grouped[item.id]) grouped[item.id] = { ...item, qty: 0 };
-          grouped[item.id].qty++;
-        });
-        Object.values(grouped).forEach(item => {
-          itemsHTML += `<div class="flex justify-between text-sm">
-                          <span>${item.title} × ${item.qty}</span>
-                          <span>$${(item.price * item.qty).toFixed(2)}</span>
-                        </div>`;
-        });
-
-        div.innerHTML = `
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="font-bold">Order #${order.id}</h3>
-            <span class="text-sm text-gray-500">${order.date}</span>
+    let itemsHTML = "";
+    Object.values(grouped).forEach(item => {
+      itemsHTML += `
+        <div class="flex justify-between items-center border-b pb-2">
+          <div class="flex gap-3 items-center">
+            <img src="${item.img}"
+              class="w-12 h-12 rounded object-cover border">
+            <span class="text-sm">
+              ${item.title} × ${item.qty}
+            </span>
           </div>
-          <div class="mb-3 space-y-1">${itemsHTML}</div>
-          <p class="font-semibold">Total: $${order.total.toFixed(2)}</p>
-          <p class="text-sm text-gray-600 mt-2">Shipping: ${order.shipping.name}, ${order.shipping.address}, ${order.shipping.city} (${order.shipping.zip})</p>
-          <p class="text-sm mt-1">Payment: <span class="font-medium">${order.payment.toUpperCase()}</span></p>
-          <p class="text-sm">Status: <span class="font-bold ${order.status === "Paid" ? "text-green-600" : "text-yellow-600"}">${order.status}</span></p>
-        `;
-        ordersList.appendChild(div);
-      });
-    }
+          <span class="text-sm font-medium">
+            $${(item.price * item.qty).toFixed(2)}
+          </span>
+        </div>
+      `;
+    });
 
-    renderOrders();
-  </script>
+    const container = document.createElement("div");
+    container.className =
+      "bg-white p-6 rounded-2xl shadow border-l-4 " +
+      (order.status === "Paid"
+        ? "border-green-500"
+        : "border-yellow-500");
+
+    container.innerHTML = `
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-bold text-lg">Order #${order.id}</h3>
+        <span class="text-sm text-gray-500">${order.date}</span>
+      </div>
+
+      <div class="space-y-2 mb-3">
+        ${itemsHTML}
+      </div>
+
+      <p class="font-semibold text-lg">
+        Total: $${order.total.toFixed(2)}
+      </p>
+
+      <p class="text-sm text-gray-600 mt-2">
+        Shipping:
+        ${order.shipping.name},
+        ${order.shipping.address},
+        ${order.shipping.city} (${order.shipping.zip})
+      </p>
+
+      <p class="text-sm mt-1">
+        Payment:
+        <span class="font-medium">${order.payment}</span>
+      </p>
+
+      <p class="text-sm">
+        Status:
+        <span class="font-bold ${
+          order.status === "Paid"
+            ? "text-green-600"
+            : "text-yellow-600"
+        }">
+          ${order.status}
+        </span>
+      </p>
+    `;
+
+    ordersList.appendChild(container);
+  });
+}
+
+renderOrders();
+</script>
+
 </body>
 </html>

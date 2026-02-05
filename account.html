@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account | MyStore</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --primary:#0a3d91;
+  --bg:#f2f4f7;
+  --card:#ffffff;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+  background:var(--bg);
+}
+
+/* ===== HEADER ===== */
+header{
+  background:var(--primary);
+  color:#fff;
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+header h2{
+  font-size:20px;
+}
+
+/* ===== CONTAINER ===== */
+.container{
+  max-width:1000px;
+  margin:30px auto;
+  padding:20px;
+}
+
+/* ===== GRID ===== */
+.account-grid{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:20px;
+}
+
+/* ===== SIDEBAR ===== */
+.account-menu{
+  background:#fff;
+  border-radius:12px;
+  padding:15px;
+}
+
+.account-menu h3{
+  margin-bottom:15px;
+}
+
+.account-menu a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  text-decoration:none;
+  color:#000;
+  border-radius:6px;
+}
+
+.account-menu a:hover,
+.account-menu a.active{
+  background:#eef2ff;
+  color:var(--primary);
+}
+
+/* ===== CONTENT ===== */
+.account-content{
+  background:#fff;
+  border-radius:12px;
+  padding:20px;
+}
+
+/* ===== PROFILE CARD ===== */
+.profile-card{
+  display:flex;
+  gap:20px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.profile-card img{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  border:4px solid var(--primary);
+}
+
+.profile-info h3{
+  margin-bottom:5px;
+}
+
+.profile-info p{
+  color:#555;
+}
+
+/* ===== FORM ===== */
+form{
+  margin-top:25px;
+}
+
+form label{
+  display:block;
+  margin:12px 0 5px;
+  font-weight:bold;
+}
+
+form input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+form button{
+  margin-top:18px;
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:12px 20px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+}
+
+form button:hover{
+  opacity:.9;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .account-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>My Account</h2>
+  <a href="dashboard.html" style="color:white;text-decoration:none;">
+    <i class="fa-solid fa-arrow-left"></i> Back to Store
+  </a>
+</header>
+
+<div class="container">
+
+  <div class="account-grid">
+
+    <!-- LEFT MENU -->
+    <div class="account-menu">
+      <h3>Account</h3>
+      <a href="#" class="active"><i class="fa-solid fa-user"></i> Profile</a>
+      <a href="orders.html"><i class="fa-solid fa-box"></i> Orders</a>
+      <a href="#"><i class="fa-solid fa-location-dot"></i> Address</a>
+      <a href="#"><i class="fa-solid fa-lock"></i> Change Password</a>
+      <a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+
+    <!-- RIGHT CONTENT -->
+    <div class="account-content">
+
+      <!-- PROFILE -->
+      <div class="profile-card">
+        <img src="https://i.pravatar.cc/150">
+        <div class="profile-info">
+          <h3 id="name">Susil Thapa</h3>
+          <p id="email">susil@email.com</p>
+        </div>
+      </div>
+
+      <!-- EDIT FORM -->
+      <form onsubmit="saveProfile(event)">
+        <label>Full Name</label>
+        <input type="text" id="fname" value="Susil Thapa">
+
+        <label>Email</label>
+        <input type="email" id="femail" value="susil@email.com">
+
+        <label>Phone</label>
+        <input type="text" id="fphone" placeholder="+977 XXXXXXXX">
+
+        <button type="submit">Save Changes</button>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* Load saved user */
+const user = JSON.parse(localStorage.getItem("user")) || {
+  name:"Susil Thapa",
+  email:"susil@email.com",
+  phone:""
+};
+
+document.getElementById("name").innerText = user.name;
+document.getElementById("email").innerText = user.email;
+document.getElementById("fname").value = user.name;
+document.getElementById("femail").value = user.email;
+document.getElementById("fphone").value = user.phone;
+
+function saveProfile(e){
+  e.preventDefault();
+
+  const updatedUser = {
+    name: fname.value,
+    email: femail.value,
+    phone: fphone.value
+  };
+
+  localStorage.setItem("user", JSON.stringify(updatedUser));
+  alert("Profile updated successfully ✅");
+
+  name.innerText = updatedUser.name;
+  email.innerText = updatedUser.email;
+}
+
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
+}
+</script>
+
+</body>
+</html>
