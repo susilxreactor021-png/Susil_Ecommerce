@@ -2,34 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MyStore | User Dashboard</title>
+<title>MyStore | Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- FONT AWESOME -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+/* =========================================================
+   ROOT VARIABLES
+========================================================= */
 :root{
   --primary:#0a3d91;
   --bg:#f4f6fa;
   --card:#ffffff;
   --text:#1e293b;
   --muted:#64748b;
-  --yellow:#facc15;
   --danger:#dc2626;
   --success:#16a34a;
 }
-*{box-sizing:border-box}
-body{
+
+/* =========================================================
+   RESET
+========================================================= */
+*{
+  box-sizing:border-box;
   margin:0;
+  padding:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+}
+
+body{
   background:var(--bg);
-  font-family:Segoe UI,Arial,sans-serif;
   color:var(--text);
 }
 
-/* HEADER */
+/* =========================================================
+   HEADER
+========================================================= */
 header{
   background:var(--primary);
-  color:white;
+  color:#fff;
   padding:14px 22px;
   display:flex;
   justify-content:space-between;
@@ -38,50 +51,62 @@ header{
   top:0;
   z-index:100;
 }
-.logo{font-size:20px;font-weight:600}
+
+.logo{
+  font-size:20px;
+  font-weight:600;
+}
+
 .header-right{
   display:flex;
-  gap:18px;
+  gap:20px;
   align-items:center;
 }
+
 .icon-btn{
   position:relative;
   cursor:pointer;
   font-size:20px;
 }
+
 .icon-btn span{
   position:absolute;
   top:-6px;
   right:-8px;
-  background:var(--yellow);
+  background:#facc15;
   color:black;
   border-radius:50%;
   padding:2px 6px;
   font-size:12px;
 }
 
-/* PROFILE MENU */
+/* =========================================================
+   PROFILE DROPDOWN
+========================================================= */
 .profile{
   position:relative;
   cursor:pointer;
 }
+
 .profile img{
   width:40px;
   height:40px;
   border-radius:50%;
   border:2px solid white;
 }
+
 .menu{
   position:absolute;
   right:0;
   top:55px;
-  background:var(--card);
-  border-radius:16px;
+  background:#fff;
   width:220px;
+  border-radius:16px;
   box-shadow:0 20px 40px rgba(0,0,0,.25);
   display:none;
   overflow:hidden;
 }
+
 .menu a{
   display:block;
   padding:14px 16px;
@@ -89,54 +114,44 @@ header{
   text-decoration:none;
   font-size:14px;
 }
-.menu a:hover{background:#f1f5f9}
-.profile.open .menu{display:block}
 
-/* LAYOUT */
+.menu a:hover{
+  background:#f1f5f9;
+}
+
+.profile.open .menu{
+  display:block;
+}
+
+/* =========================================================
+   CONTAINER
+========================================================= */
 .container{
   max-width:1400px;
   margin:auto;
-  padding:26px;
+  padding:30px;
 }
 
-/* USER CARD */
-.user-card{
-  background:var(--card);
-  border-radius:20px;
-  padding:22px;
-  display:flex;
-  gap:22px;
-  align-items:center;
-  box-shadow:0 12px 30px rgba(0,0,0,.08);
-}
-.user-card img{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-}
-.badge{
-  display:inline-block;
-  padding:6px 14px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:600;
-}
-.active{background:#dcfce7;color:#166534}
-
-/* SECTIONS */
+/* =========================================================
+   SECTION
+========================================================= */
 .section{
-  margin-top:40px;
-}
-.section h3{
-  margin-bottom:16px;
+  margin-top:20px;
 }
 
-/* PRODUCTS */
+.section h3{
+  margin-bottom:18px;
+}
+
+/* =========================================================
+   PRODUCTS GRID
+========================================================= */
 .products{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
   gap:22px;
 }
+
 .card{
   background:var(--card);
   border-radius:18px;
@@ -146,18 +161,33 @@ header{
   flex-direction:column;
   transition:.3s;
 }
-.card:hover{transform:translateY(-6px)}
+
+.card:hover{
+  transform:translateY(-6px);
+}
+
 .card img{
   height:180px;
   object-fit:cover;
   border-radius:12px;
 }
-.price{color:var(--primary);font-weight:700}
+
+.card h4{
+  margin-top:10px;
+}
+
+.price{
+  color:var(--primary);
+  font-weight:700;
+  margin-top:6px;
+}
+
 .actions{
   display:flex;
   gap:10px;
   margin-top:auto;
 }
+
 .actions button{
   flex:1;
   padding:12px;
@@ -165,10 +195,20 @@ header{
   border-radius:12px;
   cursor:pointer;
 }
-.buy{background:var(--primary);color:white}
-.wish{background:#fee2e2;color:#991b1b}
 
-/* CART */
+.buy{
+  background:var(--primary);
+  color:white;
+}
+
+.wish{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+/* =========================================================
+   CART SLIDE PANEL
+========================================================= */
 .cart{
   position:fixed;
   top:0;
@@ -182,19 +222,66 @@ header{
   flex-direction:column;
   z-index:200;
 }
-.cart.open{right:0}
+
+.cart.open{
+  right:0;
+}
+
 .cart-header{
   background:var(--primary);
   color:white;
   padding:16px;
   display:flex;
   justify-content:space-between;
+  align-items:center;
 }
-.cart-body{flex:1;overflow:auto;padding:16px}
+
+.cart-body{
+  flex:1;
+  overflow:auto;
+  padding:16px;
+}
+
+.cart-item{
+  display:flex;
+  gap:12px;
+  margin-bottom:14px;
+  align-items:center;
+}
+
+.cart-item img{
+  width:52px;
+  height:52px;
+  border-radius:10px;
+  object-fit:cover;
+}
+
+.cart-item h5{
+  font-size:14px;
+}
+
+.cart-controls{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:6px;
+}
+
+.qty-btn{
+  width:26px;
+  height:26px;
+  border:none;
+  background:var(--primary);
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
 .cart-footer{
   padding:16px;
   border-top:1px solid #e5e7eb;
 }
+
 .cart-footer button{
   width:100%;
   padding:14px;
@@ -204,7 +291,9 @@ header{
   border-radius:12px;
 }
 
-/* TOAST */
+/* =========================================================
+   TOAST
+========================================================= */
 .toast{
   position:fixed;
   bottom:30px;
@@ -217,43 +306,44 @@ header{
   opacity:0;
   transition:.3s;
 }
-.toast.show{opacity:1;bottom:50px}
+
+.toast.show{
+  opacity:1;
+  bottom:50px;
+}
 </style>
 </head>
 
 <body>
 
+<!-- =========================================================
+   HEADER
+========================================================= -->
 <header>
   <div class="logo"><i class="fa fa-store"></i> MyStore</div>
+
   <div class="header-right">
     <div class="icon-btn" onclick="openCart()">
       <i class="fa fa-cart-shopping"></i>
       <span id="cartCount">0</span>
     </div>
+
     <div class="profile" onclick="toggleProfile()">
       <img id="avatar">
       <div class="menu">
-        <a href="#">My Profile</a>
-        <a href="#">My Orders</a>
+        <a href="profile.html">My Profile</a>
+        <a href="orders.html">My Orders</a>
         <a href="#" onclick="logout()">Logout</a>
       </div>
     </div>
   </div>
 </header>
 
+<!-- =========================================================
+   MAIN CONTENT
+========================================================= -->
 <div class="container">
 
-  <!-- USER PROFILE -->
-  <div class="user-card">
-    <img id="profilePic">
-    <div>
-      <h2 id="userName"></h2>
-      <p id="userEmail" class="muted"></p>
-      <span class="badge active">Active User</span>
-    </div>
-  </div>
-
-  <!-- PRODUCTS -->
   <div class="section">
     <h3>Recommended Products</h3>
     <div class="products" id="products"></div>
@@ -261,89 +351,158 @@ header{
 
 </div>
 
-<!-- CART -->
+<!-- =========================================================
+   CART
+========================================================= -->
 <div class="cart" id="cart">
   <div class="cart-header">
     <h3>Your Cart</h3>
     <i class="fa fa-xmark" onclick="closeCart()"></i>
   </div>
+
   <div class="cart-body" id="cartItems"></div>
+
   <div class="cart-footer">
     <strong>Total: $<span id="total">0</span></strong>
-    <button>Checkout</button>
+    <button onclick="location.href='checkout.html'">Checkout</button>
   </div>
 </div>
 
 <div class="toast" id="toast">Added to cart</div>
 
+<!-- =========================================================
+   SCRIPT
+========================================================= -->
 <script>
-let products=JSON.parse(localStorage.getItem("products"))||[];
-let cart=JSON.parse(localStorage.getItem("cart"))||[];
+const productsBox = document.getElementById("products");
+const cartEl = document.getElementById("cart");
+const cartItems = document.getElementById("cartItems");
+const totalEl = document.getElementById("total");
+const cartCount = document.getElementById("cartCount");
 
+let products = JSON.parse(localStorage.getItem("products")) || [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+/* ===================== RENDER PRODUCTS ===================== */
 function renderProducts(){
-  productsBox.innerHTML="";
+  productsBox.innerHTML = "";
+
   products.forEach((p,i)=>{
-    productsBox.innerHTML+=`
-    <div class="card">
-      <img src="${p.image||p.img||'https://via.placeholder.com/300'}">
-      <h4>${p.name}</h4>
-      <div class="price">$${p.price}</div>
-      <div class="actions">
-        <button class="buy" onclick="addToCart(${i})">Add</button>
-        <button class="wish">❤</button>
+    if(p.status !== "Active") return;
+
+    productsBox.innerHTML += `
+      <div class="card">
+        <img src="${p.img || 'https://via.placeholder.com/300'}">
+        <h4>${p.name}</h4>
+        <div class="price">$${p.price}</div>
+        <div class="actions">
+          <button class="buy" onclick="addToCart(${i})">Add</button>
+          <button class="wish">❤</button>
+        </div>
       </div>
-    </div>`;
+    `;
   });
 }
 
-function addToCart(i){
-  const p=products[i];
-  const f=cart.find(c=>c.name===p.name);
-  f?f.qty++:cart.push({...p,qty:1});
-  saveCart();toast();
+/* ===================== CART LOGIC ===================== */
+function addToCart(index){
+  const p = products[index];
+  const found = cart.find(item => item.name === p.name);
+
+  if(found){
+    found.qty++;
+  }else{
+    cart.push({
+      name:p.name,
+      price:Number(p.price),
+      img:p.img,
+      qty:1
+    });
+  }
+
+  saveCart();
+  renderCart();
+  showToast();
+}
+
+function increaseQty(i){
+  cart[i].qty++;
+  saveCart();
+  renderCart();
+}
+
+function decreaseQty(i){
+  cart[i].qty--;
+  if(cart[i].qty <= 0){
+    cart.splice(i,1);
+  }
+  saveCart();
+  renderCart();
 }
 
 function saveCart(){
   localStorage.setItem("cart",JSON.stringify(cart));
-  cartCount.innerText=cart.reduce((a,b)=>a+b.qty,0);
+  cartCount.innerText = cart.reduce((a,b)=>a+b.qty,0);
 }
 
-function openCart(){cartEl.classList.add("open");renderCart()}
-function closeCart(){cartEl.classList.remove("open")}
-
+/* ===================== RENDER CART ===================== */
 function renderCart(){
-  cartItems.innerHTML="";
-  let total=0;
-  cart.forEach(c=>{
-    total+=c.price*c.qty;
-    cartItems.innerHTML+=`<div>${c.name} × ${c.qty}</div>`;
+  cartItems.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((c,i)=>{
+    total += c.price * c.qty;
+
+    cartItems.innerHTML += `
+      <div class="cart-item">
+        <img src="${c.img || 'https://via.placeholder.com/50'}">
+        <div>
+          <h5>${c.name}</h5>
+          <div>$${c.price}</div>
+          <div class="cart-controls">
+            <button class="qty-btn" onclick="decreaseQty(${i})">−</button>
+            <strong>${c.qty}</strong>
+            <button class="qty-btn" onclick="increaseQty(${i})">+</button>
+          </div>
+        </div>
+      </div>
+    `;
   });
-  totalEl.innerText=total;
+
+  totalEl.innerText = total;
 }
 
-function toast(){
-  const t=document.getElementById("toast");
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),2000);
+/* ===================== UI ===================== */
+function openCart(){
+  cartEl.classList.add("open");
+  renderCart();
+}
+
+function closeCart(){
+  cartEl.classList.remove("open");
 }
 
 function toggleProfile(){
   document.querySelector(".profile").classList.toggle("open");
 }
 
-const productsBox=document.getElementById("products");
-const cartEl=document.getElementById("cart");
-const cartItems=document.getElementById("cartItems");
-const totalEl=document.getElementById("total");
+function showToast(){
+  const t = document.getElementById("toast");
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2000);
+}
 
-renderProducts();saveCart();
+/* ===================== INIT ===================== */
+renderProducts();
+saveCart();
 </script>
 
-<!-- FIREBASE AUTH -->
+<!-- =========================================================
+   FIREBASE AUTH
+========================================================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore,doc,getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
@@ -351,23 +510,15 @@ const firebaseConfig={
   projectId:"susil-store"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-onAuthStateChanged(auth,async user=>{
+onAuthStateChanged(auth,user=>{
   if(!user) location.href="index.html";
-
-  avatar.src=user.photoURL;
-  profilePic.src=user.photoURL;
-  userName.innerText=user.displayName;
-  userEmail.innerText=user.email;
-
-  const snap=await getDoc(doc(db,"users",user.uid));
-  if(!snap.exists()) console.warn("User doc missing");
+  document.getElementById("avatar").src = user.photoURL;
 });
 
-window.logout=async()=>{
+window.logout = async ()=>{
   await signOut(auth);
   localStorage.clear();
   location.href="index.html";

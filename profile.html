@@ -3,206 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Profile | MyStore</title>
+<title>Profile | Susil Store</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-:root{
-  --primary:#0a3d91;
-  --bg:#f4f6fa;
-  --card:#ffffff;
-}
-
-*{
-  box-sizing:border-box;
-  font-family:Arial, Helvetica, sans-serif;
-  margin:0;
-}
-
-body{
-  background:var(--bg);
-}
-
-/* ===== HEADER ===== */
-header{
-  background:var(--primary);
-  color:#fff;
-  padding:15px 20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-header a{
-  color:white;
-  text-decoration:none;
-}
-
-/* ===== CONTAINER ===== */
-.container{
-  max-width:900px;
-  margin:30px auto;
-  padding:20px;
-}
-
-/* ===== PROFILE CARD ===== */
-.profile-card{
-  background:var(--card);
-  border-radius:16px;
-  padding:25px;
-  box-shadow:0 10px 25px rgba(0,0,0,.1);
-}
-
-.profile-top{
-  display:flex;
-  align-items:center;
-  gap:20px;
-  flex-wrap:wrap;
-}
-
-.profile-top img{
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  border:4px solid var(--primary);
-}
-
-.profile-info h2{
-  margin-bottom:6px;
-}
-
-.profile-info p{
-  color:#555;
-}
-
-/* ===== INFO GRID ===== */
-.info-grid{
-  margin-top:25px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:20px;
-}
-
-.info-box{
-  background:#f9fafc;
-  padding:15px;
-  border-radius:12px;
-}
-
-.info-box label{
-  font-size:13px;
-  color:#777;
-}
-
-.info-box span{
-  display:block;
-  margin-top:6px;
-  font-weight:bold;
-}
-
-/* ===== BUTTONS ===== */
-.actions{
-  margin-top:30px;
-  display:flex;
-  gap:15px;
-  flex-wrap:wrap;
-}
-
-.actions a{
-  padding:12px 18px;
-  background:var(--primary);
-  color:white;
-  border-radius:8px;
-  text-decoration:none;
-  font-size:14px;
-}
-
-.actions a.secondary{
-  background:#6b7280;
-}
-
-/* ===== RESPONSIVE ===== */
-@media(max-width:600px){
-  .profile-top{
-    text-align:center;
-    justify-content:center;
-  }
+/* EXTRA SAFETY STYLES */
+.loading{
+  opacity:.6;
+  pointer-events:none;
 }
 </style>
 </head>
 
-<body>
+<body class="bg-gray-100 min-h-screen">
 
-<header>
-  <h2>Profile</h2>
-  <a href="dashboard.html"><i class="fa-solid fa-arrow-left"></i> Back</a>
+<!-- ================= HEADER ================= -->
+<header class="bg-orange-600 text-white px-6 py-4 flex justify-between items-center">
+  <h1 class="font-bold text-xl">Susil Store</h1>
+  <button onclick="logout()" class="bg-white text-orange-600 px-4 py-2 rounded-lg">
+    Logout
+  </button>
 </header>
 
-<div class="container">
+<!-- ================= MAIN ================= -->
+<main class="max-w-5xl mx-auto mt-12 px-4">
 
-  <div class="profile-card">
+  <div id="profileCard"
+       class="bg-white rounded-3xl shadow-xl p-10 grid md:grid-cols-3 gap-10 loading">
 
-    <!-- TOP -->
-    <div class="profile-top">
-      <img src="https://i.pravatar.cc/150" alt="User">
-      <div class="profile-info">
-        <h2 id="userName">Guest User</h2>
-        <p id="userEmail">guest@email.com</p>
-      </div>
+    <!-- LEFT -->
+    <div class="text-center">
+      <img id="photo"
+           class="w-40 h-40 rounded-full mx-auto border-4 border-orange-500 object-cover"
+           src=""
+           alt="Profile">
+
+      <h2 id="name" class="mt-4 text-xl font-bold"></h2>
+      <p id="email" class="text-gray-500 text-sm"></p>
+
+      <span id="status"
+            class="inline-block mt-4 px-4 py-1 rounded-full text-xs bg-green-100 text-green-700">
+        Active
+      </span>
     </div>
 
-    <!-- DETAILS -->
-    <div class="info-grid">
-      <div class="info-box">
-        <label>Full Name</label>
-        <span id="fullName">Guest User</span>
-      </div>
-      <div class="info-box">
-        <label>Email</label>
-        <span id="email">guest@email.com</span>
-      </div>
-      <div class="info-box">
-        <label>Phone</label>
-        <span id="phone">Not added</span>
-      </div>
-      <div class="info-box">
-        <label>Account Created</label>
-        <span id="created">—</span>
-      </div>
-    </div>
+    <!-- RIGHT -->
+    <div class="md:col-span-2">
+      <h3 class="text-lg font-bold mb-6">Account Details</h3>
 
-    <!-- ACTIONS -->
-    <div class="actions">
-      <a href="account.html"><i class="fa-solid fa-pen"></i> Edit Profile</a>
-      <a href="orders.html" class="secondary"><i class="fa-solid fa-box"></i> View Orders</a>
-      <a href="#" onclick="logout()" class="secondary"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div class="bg-gray-50 p-4 rounded-xl">
+          <p class="text-xs text-gray-500">Full Name</p>
+          <p id="detailName" class="font-semibold"></p>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-xl">
+          <p class="text-xs text-gray-500">Email</p>
+          <p id="detailEmail" class="font-semibold"></p>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-xl">
+          <p class="text-xs text-gray-500">Role</p>
+          <p id="detailRole" class="font-semibold"></p>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-xl">
+          <p class="text-xs text-gray-500">Member Since</p>
+          <p id="detailDate" class="font-semibold"></p>
+        </div>
+      </div>
+
+      <div class="mt-8 flex gap-4">
+        <a href="orders.html" class="bg-orange-500 text-white px-6 py-2 rounded-xl">
+          My Orders
+        </a>
+        <a href="wishlist.html" class="border px-6 py-2 rounded-xl">
+          Wishlist
+        </a>
+      </div>
     </div>
 
   </div>
 
-</div>
+</main>
 
-<script>
-/* Load user from localStorage */
-const user = JSON.parse(localStorage.getItem("user")) || {
-  name:"Guest User",
-  email:"guest@email.com",
-  phone:"Not added",
-  created:new Date().toLocaleDateString()
+<!-- ================= FIREBASE ================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
+  authDomain: "susil-store.firebaseapp.com",
+  projectId: "susil-store",
+  storageBucket: "susil-store.firebasestorage.app",
+  messagingSenderId: "502951690223",
+  appId: "1:502951690223:web:73152503cc08c4e8ab801a"
 };
 
-document.getElementById("userName").innerText = user.name;
-document.getElementById("userEmail").innerText = user.email;
-document.getElementById("fullName").innerText = user.name;
-document.getElementById("email").innerText = user.email;
-document.getElementById("phone").innerText = user.phone || "Not added";
-document.getElementById("created").innerText = user.created || "—";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-function logout(){
-  localStorage.clear();
-  location.href="index.html";
-}
+/* ================= LOAD USER ================= */
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  const ref = doc(db, "users", user.uid);
+  let snap = await getDoc(ref);
+
+  /* 🔥 AUTO-FIX: CREATE USER IF MISSING */
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      uid: user.uid,
+      name: user.displayName,
+      email: user.email,
+      photo: user.photoURL,
+      role: "User",
+      status: "Active",
+      createdAt: serverTimestamp()
+    });
+    snap = await getDoc(ref);
+  }
+
+  const data = snap.data();
+
+  /* UI UPDATE */
+  document.getElementById("photo").src =
+    data.photo || user.photoURL;
+
+  document.getElementById("name").textContent =
+    data.name || user.displayName;
+
+  document.getElementById("email").textContent =
+    data.email || user.email;
+
+  document.getElementById("detailName").textContent =
+    data.name || user.displayName;
+
+  document.getElementById("detailEmail").textContent =
+    data.email || user.email;
+
+  document.getElementById("detailRole").textContent =
+    data.role || "User";
+
+  document.getElementById("detailDate").textContent =
+    data.createdAt?.toDate().toDateString() || "—";
+
+  document.getElementById("profileCard")
+    .classList.remove("loading");
+});
+
+/* ================= LOGOUT ================= */
+window.logout = async () => {
+  await signOut(auth);
+  window.location.href = "index.html";
+};
 </script>
 
 </body>

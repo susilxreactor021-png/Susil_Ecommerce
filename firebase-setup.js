@@ -1,22 +1,13 @@
-// firebase-setup.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-const firebaseConfig = { /* your config */ };
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
+  authDomain: "susil-store.firebaseapp.com",
+  projectId: "susil-store",
+};
 
-export function requireAuth(onUser) {
-  onAuthStateChanged(auth, user => {
-    if (!user) {
-      window.location.href = 'index.html'; // your sign-in page
-    } else {
-      onUser(user);
-    }
-  });
-}
-
-export function setupSignOut(btnId) {
-  const btn = document.getElementById(btnId);
-  if (btn) btn.addEventListener('click', () => signOut(auth));
-}
+export const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
