@@ -20,7 +20,7 @@
 <style>
 
 /* ------------------------------------------------------
-   REVEAL ANIMATION (SCROLL)
+   SCROLL REVEAL ANIMATION
 ------------------------------------------------------ */
 .reveal{
   opacity:0;
@@ -31,6 +31,13 @@
 .reveal.show{
   opacity:1;
   transform:translateY(0);
+}
+
+/* ------------------------------------------------------
+   SMOOTH BUTTON INTERACTION (NO DESIGN CHANGE)
+------------------------------------------------------ */
+button:active{
+  transform:scale(0.98);
 }
 
 </style>
@@ -91,9 +98,7 @@
 
       <!-- FEATURE 1 -->
       <div class="rounded-2xl shadow-lg p-6 text-center reveal">
-        <img
-          src="Images/Fast Delivery.avif"
-          class="h-40 mx-auto mb-4 rounded-xl">
+        <img src="Images/Fast Delivery.avif" class="h-40 mx-auto mb-4 rounded-xl">
         <h3 class="font-bold text-lg mb-2">Fast Delivery</h3>
         <p class="text-gray-500 text-sm">
           Lightning-fast delivery across the country.
@@ -102,9 +107,7 @@
 
       <!-- FEATURE 2 -->
       <div class="rounded-2xl shadow-lg p-6 text-center reveal">
-        <img
-          src="Images/Secure Payments.webp"
-          class="h-40 mx-auto mb-4 rounded-xl">
+        <img src="Images/Secure Payments.webp" class="h-40 mx-auto mb-4 rounded-xl">
         <h3 class="font-bold text-lg mb-2">Secure Payments</h3>
         <p class="text-gray-500 text-sm">
           Google-secured authentication and payments.
@@ -113,9 +116,7 @@
 
       <!-- FEATURE 3 -->
       <div class="rounded-2xl shadow-lg p-6 text-center reveal">
-        <img
-          src="Images/Top Quality.jpg"
-          class="h-40 mx-auto mb-4 rounded-xl">
+        <img src="Images/Top Quality.jpg" class="h-40 mx-auto mb-4 rounded-xl">
         <h3 class="font-bold text-lg mb-2">Top Quality</h3>
         <p class="text-gray-500 text-sm">
           Premium, verified, and trusted products.
@@ -140,31 +141,22 @@
 
     <div class="grid md:grid-cols-3 gap-8">
 
-      <!-- PRODUCT 1 -->
       <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
         <img src="Images/ipad 10th generation.jpg" class="rounded-xl mb-4">
         <h4 class="font-bold">iPad 10th Generation</h4>
-        <p class="text-sm text-gray-500">
-          Powerful. Portable. Modern.
-        </p>
+        <p class="text-sm text-gray-500">Powerful. Portable. Modern.</p>
       </div>
 
-      <!-- PRODUCT 2 -->
       <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
         <img src="Images/samsung s25 ultra.jpg" class="rounded-xl mb-4">
         <h4 class="font-bold">Samsung S25 Ultra</h4>
-        <p class="text-sm text-gray-500">
-          Next-gen smartphone experience.
-        </p>
+        <p class="text-sm text-gray-500">Next-gen smartphone experience.</p>
       </div>
 
-      <!-- PRODUCT 3 -->
       <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
         <img src="Images/laptop rog strix.jpg" class="rounded-xl mb-4">
         <h4 class="font-bold">ROG Strix Laptop</h4>
-        <p class="text-sm text-gray-500">
-          High-performance gaming beast.
-        </p>
+        <p class="text-sm text-gray-500">High-performance gaming beast.</p>
       </div>
 
     </div>
@@ -191,11 +183,9 @@
       id="googleLogin"
       class="flex items-center justify-center gap-3 w-full border py-3 rounded-xl font-semibold hover:bg-gray-50 transition">
 
-      <img
-        src="https://img.icons8.com/color/48/google-logo.png"
-        class="h-6">
-
+      <img src="https://img.icons8.com/color/48/google-logo.png" class="h-6">
       Continue with Google
+
     </button>
 
   </div>
@@ -213,7 +203,6 @@
      SCROLL REVEAL SCRIPT
 ====================================================== -->
 <script>
-
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -224,11 +213,10 @@ const observer = new IntersectionObserver(entries => {
 
 document.querySelectorAll(".reveal")
   .forEach(el => observer.observe(el));
-
 </script>
 
 <!-- ======================================================
-     FIREBASE AUTH + FIRESTORE
+     FIREBASE AUTH + MOBILE FIX
 ====================================================== -->
 <script type="module">
 
@@ -237,6 +225,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -269,19 +259,19 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 /* ------------------------------------------------------
-   GOOGLE LOGIN
+   DEVICE CHECK
 ------------------------------------------------------ */
-document.getElementById("googleLogin")
-.addEventListener("click", async () => {
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  const result = await signInWithPopup(auth, provider);
-  const user = result.user;
-
+/* ------------------------------------------------------
+   SAVE USER
+------------------------------------------------------ */
+async function saveUser(user){
   const ref = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
 
-  if (!snap.exists()) {
-    await setDoc(ref, {
+  if(!snap.exists()){
+    await setDoc(ref,{
       uid: user.uid,
       name: user.displayName,
       email: user.email,
@@ -291,15 +281,42 @@ document.getElementById("googleLogin")
       createdAt: serverTimestamp()
     });
   }
+}
 
-  window.location.href = "dashboard.html";
+/* ------------------------------------------------------
+   LOGIN HANDLER
+------------------------------------------------------ */
+document.getElementById("googleLogin")
+.addEventListener("click", async () => {
+  try{
+    if(isMobile){
+      await signInWithRedirect(auth, provider);
+    }else{
+      const result = await signInWithPopup(auth, provider);
+      await saveUser(result.user);
+      window.location.href = "dashboard.html";
+    }
+  }catch(err){
+    console.error(err);
+    alert("Login failed. Please try again.");
+  }
+});
+
+/* ------------------------------------------------------
+   REDIRECT RESULT (MOBILE)
+------------------------------------------------------ */
+getRedirectResult(auth).then(async result => {
+  if(result && result.user){
+    await saveUser(result.user);
+    window.location.href = "dashboard.html";
+  }
 });
 
 /* ------------------------------------------------------
    AUTO REDIRECT IF LOGGED IN
 ------------------------------------------------------ */
 onAuthStateChanged(auth, user => {
-  if (user) {
+  if(user){
     window.location.href = "dashboard.html";
   }
 });
