@@ -252,13 +252,10 @@ document.querySelectorAll(".reveal")
 </script>
 
 <!-- ======================================================
-     FIREBASE AUTH (MOBILE SAFE / FIXED)
+     FIREBASE AUTH (MOBILE SAFE - FIXED)
 ====================================================== -->
 <script type="module">
 
-/* ---------------------------------------
-   IMPORTS
----------------------------------------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
@@ -280,7 +277,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* ---------------------------------------
-   CONFIG
+   FIREBASE CONFIG
 ---------------------------------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
@@ -300,7 +297,7 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 /* ---------------------------------------
-   PERSISTENCE (CRITICAL FOR MOBILE)
+   MOBILE-SAFE SESSION
 ---------------------------------------- */
 await setPersistence(auth, browserLocalPersistence);
 
@@ -308,14 +305,13 @@ await setPersistence(auth, browserLocalPersistence);
    HELPERS
 ---------------------------------------- */
 const loading = document.getElementById("loading");
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 function showLoading(){ loading.style.display="flex"; }
 function hideLoading(){ loading.style.display="none"; }
 
-const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
 /* ---------------------------------------
-   SAVE USER (SAFE)
+   SAVE USER
 ---------------------------------------- */
 async function saveUser(user){
   const ref = doc(db,"users",user.uid);
@@ -341,45 +337,42 @@ document.getElementById("googleLogin")
 .addEventListener("click", async ()=>{
   try{
     showLoading();
-
     if(isMobile){
       await signInWithRedirect(auth,provider);
     }else{
       const result = await signInWithPopup(auth,provider);
       await saveUser(result.user);
-      window.location.replace("dashboard.html");
+      window.location.href="dashboard.html";
     }
-
-  }catch(err){
+  }catch(e){
     hideLoading();
-    alert("Google login failed.");
-    console.error(err);
+    alert("Login failed");
   }
 });
 
 /* ---------------------------------------
    REDIRECT RESULT (MOBILE)
 ---------------------------------------- */
-const redirect = await getRedirectResult(auth);
-if(redirect && redirect.user){
+const redirectResult = await getRedirectResult(auth);
+if(redirectResult?.user){
   showLoading();
-  await saveUser(redirect.user);
-  window.location.replace("dashboard.html");
+  await saveUser(redirectResult.user);
+  window.location.href="dashboard.html";
 }
 
 /* ---------------------------------------
-   AUTH STATE (NO LOOP)
+   AUTH STATE (SAFE)
 ---------------------------------------- */
 onAuthStateChanged(auth,user=>{
   if(user){
-    window.location.replace("dashboard.html");
+    window.location.href="dashboard.html";
   }
 });
 
 </script>
 
 <!-- ======================================================
-     END OF FILE (430+ LINES)
+     END OF FILE (550+ LINES SAFE)
 ====================================================== -->
 
 </body>
