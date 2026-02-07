@@ -8,20 +8,28 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+/* ======================================================
+   RESET & BASE
+====================================================== */
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:Segoe UI,Arial,sans-serif;
   background:#f1f5f9;
+  color:#0f172a;
 }
 
-/* ===== LAYOUT ===== */
+/* ======================================================
+   APP LAYOUT
+====================================================== */
 .app{
   display:flex;
   min-height:100vh;
 }
 
-/* ===== SIDEBAR ===== */
+/* ======================================================
+   SIDEBAR
+====================================================== */
 .sidebar{
   width:270px;
   background:linear-gradient(180deg,#0b5ed7,#0a3d91);
@@ -31,7 +39,6 @@ body{
 .sidebar h2{
   text-align:center;
   margin-bottom:40px;
-  font-size:22px;
 }
 .sidebar a{
   display:flex;
@@ -66,14 +73,18 @@ body{
   color:white;
 }
 
-/* ===== MAIN ===== */
+/* ======================================================
+   MAIN
+====================================================== */
 .main{
   flex:1;
   display:flex;
   flex-direction:column;
 }
 
-/* ===== TOP BAR ===== */
+/* ======================================================
+   TOPBAR
+====================================================== */
 .topbar{
   height:70px;
   background:white;
@@ -83,7 +94,6 @@ body{
   padding:0 28px;
   box-shadow:0 4px 12px rgba(0,0,0,.06);
 }
-.topbar h3{margin:0}
 .profile{
   display:flex;
   align-items:center;
@@ -93,31 +103,74 @@ body{
   width:38px;
   height:38px;
   border-radius:50%;
+  border:2px solid #0b5ed7;
 }
 
-/* ===== CONTENT ===== */
+/* ======================================================
+   CONTENT
+====================================================== */
 .content{
   padding:26px;
+  max-width:1200px;
 }
 
-/* ===== CARD ===== */
+/* ======================================================
+   TABS
+====================================================== */
+.tabs{
+  display:flex;
+  gap:12px;
+  margin-bottom:22px;
+  flex-wrap:wrap;
+}
+.tab{
+  padding:12px 18px;
+  border-radius:12px;
+  background:#e2e8f0;
+  cursor:pointer;
+  font-weight:500;
+}
+.tab.active{
+  background:#0b5ed7;
+  color:white;
+}
+
+/* ======================================================
+   PANELS
+====================================================== */
+.panel{display:none}
+.panel.active{display:block}
+
+/* ======================================================
+   CARD
+====================================================== */
 .card{
-  max-width:600px;
   background:white;
   border-radius:18px;
   padding:26px;
   box-shadow:0 10px 24px rgba(0,0,0,.08);
+  margin-bottom:24px;
 }
 .card h4{
   margin-top:0;
   margin-bottom:20px;
 }
 
-/* ===== FORM ===== */
+/* ======================================================
+   FORMS
+====================================================== */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+label{
+  font-size:14px;
+  color:#475569;
+}
 input,select{
   width:100%;
   padding:14px;
-  margin-bottom:18px;
   border-radius:12px;
   border:1px solid #cbd5e1;
   font-size:15px;
@@ -127,21 +180,49 @@ input:focus,select:focus{
   border-color:#0b5ed7;
   box-shadow:0 0 0 2px rgba(11,94,215,.2);
 }
+
+/* ======================================================
+   TOGGLES
+====================================================== */
+.toggle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px;
+  border-radius:12px;
+  background:#f8fafc;
+  margin-bottom:14px;
+}
+
+/* ======================================================
+   BUTTONS
+====================================================== */
+.actions{
+  margin-top:18px;
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
 button{
   background:#0b5ed7;
   color:white;
-  padding:14px;
+  padding:14px 22px;
   border:none;
   border-radius:12px;
   font-size:15px;
   cursor:pointer;
   transition:.25s;
 }
+button.secondary{
+  background:#64748b;
+}
 button:hover{
   background:#0a3d91;
 }
 
-/* ===== FOOTER ===== */
+/* ======================================================
+   FOOTER
+====================================================== */
 .footer{
   margin-top:auto;
   background:#0a3d91;
@@ -150,6 +231,14 @@ button:hover{
   padding:14px;
   font-size:14px;
 }
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .content{padding:18px}
+}
 </style>
 </head>
 
@@ -157,54 +246,110 @@ button:hover{
 
 <div class="app">
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <h2>MyStore</h2>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <h2>MyStore</h2>
+  <a href="admin.html"><i class="fa fa-box"></i> Products</a>
+  <a href="adminorder.html"><i class="fa fa-cart-shopping"></i> Orders</a>
+  <a href="users.html"><i class="fa fa-users"></i> Users</a>
+  <a href="Analytics.html"><i class="fa fa-chart-line"></i> Analytics</a>
+  <a class="active"><i class="fa fa-gear"></i> Settings</a>
+</aside>
 
-    <a href="admin.html"><i class="fa fa-box"></i> Products</a>
-    <a href="adminorder.html"><i class="fa fa-cart-shopping"></i> Orders</a>
-    <a href="users.html"><i class="fa fa-users"></i> Users</a>
-    <a href="Analytics.html"><i class="fa fa-chart-line"></i> Analytics</a>
-    <a class="active"><i class="fa fa-gear"></i> Settings</a>
-  </aside>
+<!-- MAIN -->
+<main class="main">
 
-  <!-- MAIN -->
-  <main class="main">
+<div class="topbar">
+  <h3>Admin Settings</h3>
+  <div class="profile">
+    <span>Admin</span>
+    <img src="https://i.pravatar.cc/150?img=32">
+  </div>
+</div>
 
-    <!-- TOP BAR -->
-    <div class="topbar">
-      <h3>Store Settings</h3>
-      <div class="profile">
-        <span>Admin</span>
-        <img src="https://i.pravatar.cc/150?img=32">
+<div class="content">
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="openTab(event,'general')">General</div>
+  <div class="tab" onclick="openTab(event,'store')">Store</div>
+  <div class="tab" onclick="openTab(event,'security')">Security</div>
+</div>
+
+<!-- GENERAL -->
+<div id="general" class="panel active">
+  <div class="card">
+    <h4>General Settings</h4>
+    <div class="form-grid">
+      <div>
+        <label>Store Name</label>
+        <input id="storeName" value="MyStore">
       </div>
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-      <div class="card">
-        <h4>General Settings</h4>
-
-        <input placeholder="Store Name" value="MyStore">
-        <input placeholder="Support Email" value="support@mystore.com">
-
-        <select>
+      <div>
+        <label>Support Email</label>
+        <input id="supportEmail" value="support@mystore.com">
+      </div>
+      <div>
+        <label>Currency</label>
+        <select id="currency">
           <option>USD</option>
           <option selected>NPR</option>
           <option>INR</option>
         </select>
-
-        <button><i class="fa fa-save"></i> Save Settings</button>
       </div>
     </div>
-
-    <!-- FOOTER -->
-    <div class="footer">
-      © 2026 MyStore Admin Panel
+    <div class="actions">
+      <button onclick="saveSettings()">Save Settings</button>
     </div>
-
-  </main>
+  </div>
 </div>
+
+<!-- STORE -->
+<div id="store" class="panel">
+  <div class="card">
+    <h4>Store Preferences</h4>
+    <div class="toggle"><span>Enable Storefront</span><input type="checkbox" checked></div>
+    <div class="toggle"><span>Guest Checkout</span><input type="checkbox"></div>
+    <div class="toggle"><span>Auto Stock Control</span><input type="checkbox" checked></div>
+  </div>
+</div>
+
+<!-- SECURITY -->
+<div id="security" class="panel">
+  <div class="card">
+    <h4>Security</h4>
+    <div class="toggle"><span>Two Factor Auth</span><input type="checkbox"></div>
+    <div class="toggle"><span>Force Logout All</span><input type="checkbox"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  © 2026 MyStore Admin Panel
+</div>
+
+</main>
+</div>
+
+<script>
+function openTab(e,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function saveSettings(){
+  const data={
+    storeName:storeName.value,
+    supportEmail:supportEmail.value,
+    currency:currency.value
+  };
+  localStorage.setItem("adminSettings",JSON.stringify(data));
+  alert("Settings saved!");
+}
+</script>
 
 </body>
 </html>

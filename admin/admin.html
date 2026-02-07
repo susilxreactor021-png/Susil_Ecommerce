@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MyStore Admin Dashboard</title>
 
-<!-- FONT AWESOME -->
+<!-- ======================================================
+     FONT AWESOME
+====================================================== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -34,7 +36,7 @@ body{
 }
 
 /* =========================================================
-   SIDEBAR (SAME AS ANALYTICS)
+   SIDEBAR
 ========================================================= */
 .sidebar{
   width:270px;
@@ -108,14 +110,61 @@ body{
   box-shadow:0 6px 16px rgba(0,0,0,.06);
 }
 
-.header h3{
+.header-left h3{
   font-size:20px;
 }
 
-.header span{
+/* =========================================================
+   PROFILE DROPDOWN
+========================================================= */
+.profile-wrapper{
+  position:relative;
+}
+
+.profile-btn{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:12px;
+  cursor:pointer;
+}
+
+.profile-btn img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #0b5ed7;
+}
+
+.profile-btn span{
+  font-weight:600;
+}
+
+.profile-dropdown{
+  position:absolute;
+  right:0;
+  top:58px;
+  background:white;
+  width:200px;
+  border-radius:14px;
+  box-shadow:0 12px 24px rgba(0,0,0,.12);
+  display:none;
+  overflow:hidden;
+  z-index:100;
+}
+
+.profile-dropdown a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  text-decoration:none;
+  color:#222;
+  transition:.25s;
+}
+
+.profile-dropdown a:hover{
+  background:#f1f4f8;
 }
 
 /* =========================================================
@@ -208,13 +257,8 @@ tbody tr:hover{
   cursor:pointer;
 }
 
-.edit{
-  background:#22c55e;
-}
-
-.delete{
-  background:#ef4444;
-}
+.edit{ background:#22c55e; }
+.delete{ background:#ef4444; }
 
 /* =========================================================
    BADGES
@@ -251,17 +295,13 @@ tbody tr:hover{
 ========================================================= */
 @media(max-width:768px){
 
-  .sidebar{
-    display:none;
-  }
+  .sidebar{ display:none; }
 
-  table,thead,tbody,th,td,tr{
-    display:block;
-  }
+  .profile-btn span{ display:none; }
 
-  thead{
-    display:none;
-  }
+  table,thead,tbody,th,td,tr{ display:block; }
+
+  thead{ display:none; }
 
   tbody tr{
     background:white;
@@ -322,8 +362,27 @@ tbody tr:hover{
 
 <!-- HEADER -->
 <div class="header">
-  <h3>Product Management</h3>
-  <span><i class="fa fa-user"></i> Admin</span>
+  <div class="header-left">
+    <h3>Product Management</h3>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="profile-wrapper">
+    <div class="profile-btn" onclick="toggleProfile()">
+      <img src="https://i.pravatar.cc/150?img=12">
+      <span>Admin</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="profile-dropdown" id="profileMenu">
+      <a href="profile.html">
+        <i class="fa fa-user"></i> Profile
+      </a>
+      <a href="#" onclick="logout()">
+        <i class="fa fa-right-from-bracket"></i> Logout
+      </a>
+    </div>
+  </div>
 </div>
 
 <!-- ADD PRODUCT -->
@@ -360,7 +419,6 @@ tbody tr:hover{
 <br>
 
 <input id="search" placeholder="🔍 Search product">
-
 <br><br>
 
 <table>
@@ -388,18 +446,37 @@ tbody tr:hover{
 ====================================================== -->
 <script>
 
+/* ======================================================
+   ADMIN AUTH GUARD
+====================================================== */
+(function(){
+  if(localStorage.getItem("adminAuth") !== "true"){
+    location.replace("adminlogin.html");
+  }
+})();
+
+/* ======================================================
+   GLOBAL STATE
+====================================================== */
 let products = JSON.parse(localStorage.getItem("products")) || [];
 let editIndex = null;
 
-const nameInput = document.getElementById("name");
+/* ======================================================
+   ELEMENT REFERENCES
+====================================================== */
+const nameInput  = document.getElementById("name");
 const priceInput = document.getElementById("price");
 const stockInput = document.getElementById("stock");
 const categoryInput = document.getElementById("category");
 const statusInput = document.getElementById("status");
 const imageInput = document.getElementById("image");
-const descInput = document.getElementById("desc");
-const table = document.getElementById("productTable");
+const descInput  = document.getElementById("desc");
+const table      = document.getElementById("productTable");
+const searchInput= document.getElementById("search");
 
+/* ======================================================
+   SAVE PRODUCT
+====================================================== */
 function saveProduct(){
 
   if(!nameInput.value.trim()){
@@ -409,15 +486,14 @@ function saveProduct(){
 
   const oldImg = editIndex !== null ? products[editIndex].img : "";
 
-  const save = img => {
-
+  const saveData = (img)=>{
     const data = {
-      name:nameInput.value,
-      price:priceInput.value,
-      stock:stockInput.value,
+      name:nameInput.value.trim(),
+      price:priceInput.value||0,
+      stock:stockInput.value||0,
       category:categoryInput.value,
       status:statusInput.value,
-      desc:descInput.value,
+      desc:descInput.value.trim(),
       img:img
     };
 
@@ -434,27 +510,28 @@ function saveProduct(){
   };
 
   if(imageInput.files[0]){
-    const r = new FileReader();
-    r.onload = () => save(r.result);
-    r.readAsDataURL(imageInput.files[0]);
+    const reader=new FileReader();
+    reader.onload=()=>saveData(reader.result);
+    reader.readAsDataURL(imageInput.files[0]);
   }else{
-    save(oldImg);
+    saveData(oldImg);
   }
 }
 
+/* ======================================================
+   RENDER
+====================================================== */
 function render(){
-
   table.innerHTML="";
-  const search = document.getElementById("search").value.toLowerCase();
+  const q=searchInput.value.toLowerCase();
 
   products.forEach((p,i)=>{
+    if(!p.name.toLowerCase().includes(q))return;
 
-    if(!p.name.toLowerCase().includes(search)) return;
-
-    table.innerHTML += `
+    table.innerHTML+=`
     <tr>
       <td data-label="Image">
-        ${p.img ? `<img src="${p.img}" class="product-img">` : "-"}
+        ${p.img?`<img src="${p.img}" class="product-img">`:"-"}
       </td>
       <td data-label="Name">${p.name}</td>
       <td data-label="Price">$${p.price}</td>
@@ -468,31 +545,28 @@ function render(){
         <button class="action-btn edit" onclick="editProduct(${i})">Edit</button>
         <button class="action-btn delete" onclick="del(${i})">Delete</button>
       </td>
-    </tr>
-    `;
+    </tr>`;
   });
 }
 
+/* ======================================================
+   HELPERS
+====================================================== */
 function editProduct(i){
-  const p = products[i];
-
-  nameInput.value = p.name;
-  priceInput.value = p.price;
-  stockInput.value = p.stock;
-  categoryInput.value = p.category;
-  statusInput.value = p.status;
-  descInput.value = p.desc;
-
-  editIndex = i;
-
-  document.getElementById("formTitle").innerText = "Edit Product";
-  document.getElementById("saveBtn").innerText = "Update Product";
+  const p=products[i];
+  nameInput.value=p.name;
+  priceInput.value=p.price;
+  stockInput.value=p.stock;
+  categoryInput.value=p.category;
+  statusInput.value=p.status;
+  descInput.value=p.desc;
+  editIndex=i;
+  formTitle.innerText="Edit Product";
+  saveBtn.innerText="Update Product";
 }
 
 function toggleStatus(i){
-  products[i].status =
-    products[i].status === "Active" ? "Inactive" : "Active";
-
+  products[i].status=products[i].status==="Active"?"Inactive":"Active";
   localStorage.setItem("products",JSON.stringify(products));
   render();
 }
@@ -511,12 +585,36 @@ function clearForm(){
   stockInput.value="";
   descInput.value="";
   imageInput.value="";
-
-  document.getElementById("formTitle").innerText = "Add Product";
-  document.getElementById("saveBtn").innerText = "Save Product";
+  editIndex=null;
+  formTitle.innerText="Add Product";
+  saveBtn.innerText="Save Product";
 }
 
-document.getElementById("search").addEventListener("input",render);
+/* ======================================================
+   PROFILE MENU
+====================================================== */
+function toggleProfile(){
+  const menu=document.getElementById("profileMenu");
+  menu.style.display=menu.style.display==="block"?"none":"block";
+}
+
+window.onclick=(e)=>{
+  if(!e.target.closest(".profile-wrapper")){
+    document.getElementById("profileMenu").style.display="none";
+  }
+};
+
+/* ======================================================
+   LOGOUT
+====================================================== */
+function logout(){
+  if(confirm("Logout admin?")){
+    localStorage.removeItem("adminAuth");
+    location.href="adminlogin.html";
+  }
+}
+
+searchInput.addEventListener("input",render);
 render();
 
 </script>

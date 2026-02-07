@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Profile | MyStore</title>
+
+<!-- FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* ======================================================
+   RESET & BASE
+====================================================== */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Segoe UI", Arial, sans-serif;
+}
+
+body{
+  background:#f4f6f9;
+  color:#222;
+}
+
+/* ======================================================
+   LAYOUT
+====================================================== */
+.admin-container{
+  display:flex;
+  min-height:100vh;
+}
+
+/* ======================================================
+   SIDEBAR
+====================================================== */
+.sidebar{
+  width:270px;
+  background:linear-gradient(180deg,#0b5ed7,#0a3d91);
+  color:white;
+  padding:24px 18px;
+}
+
+.sidebar h2{
+  text-align:center;
+  margin-bottom:40px;
+}
+
+.sidebar a{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  margin-bottom:12px;
+  border-radius:14px;
+  color:white;
+  text-decoration:none;
+  transition:.25s;
+}
+
+.sidebar a i{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.18);
+  border-radius:10px;
+}
+
+.sidebar a:hover{
+  background:rgba(255,255,255,.18);
+  transform:translateX(6px);
+}
+
+.sidebar a.active{
+  background:white;
+  color:#0b5ed7;
+  font-weight:600;
+}
+
+.sidebar a.active i{
+  background:#0b5ed7;
+  color:white;
+}
+
+/* ======================================================
+   MAIN
+====================================================== */
+.main{
+  flex:1;
+  padding:25px;
+}
+
+/* ======================================================
+   HEADER
+====================================================== */
+.header{
+  background:#fff;
+  padding:18px 22px;
+  border-radius:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+  box-shadow:0 6px 16px rgba(0,0,0,.06);
+}
+
+.header h3{
+  font-size:20px;
+}
+
+/* ======================================================
+   PROFILE DROPDOWN
+====================================================== */
+.profile-wrapper{
+  position:relative;
+}
+
+.profile-btn{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+}
+
+.profile-btn img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:2px solid #0b5ed7;
+}
+
+.profile-btn span{
+  font-weight:600;
+}
+
+.profile-dropdown{
+  position:absolute;
+  right:0;
+  top:58px;
+  background:white;
+  width:200px;
+  border-radius:14px;
+  box-shadow:0 12px 24px rgba(0,0,0,.12);
+  display:none;
+  overflow:hidden;
+  z-index:99;
+}
+
+.profile-dropdown a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  text-decoration:none;
+  color:#222;
+}
+
+.profile-dropdown a:hover{
+  background:#f1f4f8;
+}
+
+/* ======================================================
+   PROFILE CARD
+====================================================== */
+.profile-card{
+  background:white;
+  padding:30px;
+  border-radius:20px;
+  max-width:720px;
+  margin:auto;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+}
+
+.profile-top{
+  display:flex;
+  align-items:center;
+  gap:25px;
+  margin-bottom:25px;
+}
+
+.profile-avatar{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid #0b5ed7;
+}
+
+.upload-btn{
+  background:#0b5ed7;
+  color:white;
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  display:inline-block;
+  margin-top:10px;
+  font-size:14px;
+}
+
+.profile-info h2{
+  margin-bottom:6px;
+}
+
+.profile-info p{
+  color:#555;
+}
+
+/* ======================================================
+   FORM
+====================================================== */
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.form-grid label{
+  font-weight:600;
+  font-size:14px;
+  margin-bottom:6px;
+  display:block;
+}
+
+.form-grid input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+.full{
+  grid-column:1 / -1;
+}
+
+.save-btn{
+  margin-top:20px;
+  background:#0b5ed7;
+  color:white;
+  border:none;
+  padding:14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.save-btn:hover{
+  background:#094bb5;
+}
+
+/* ======================================================
+   MOBILE
+====================================================== */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .form-grid{grid-template-columns:1fr;}
+  .profile-top{flex-direction:column;text-align:center;}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="admin-container">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>MyStore</h2>
+
+  <a href="admin.html">
+    <i class="fa fa-box"></i> Products
+  </a>
+
+  <a href="adminorder.html">
+    <i class="fa fa-cart-shopping"></i> Orders
+  </a>
+
+  <a href="users.html">
+    <i class="fa fa-users"></i> Users
+  </a>
+
+  <a href="Analytics.html">
+    <i class="fa fa-chart-line"></i> Analytics
+  </a>
+
+  <a href="profile.html" class="active">
+    <i class="fa fa-user"></i> Profile
+  </a>
+
+  <a href="Settings.html">
+    <i class="fa fa-gear"></i> Settings
+  </a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- HEADER -->
+<div class="header">
+  <h3>Admin Profile</h3>
+
+  <div class="profile-wrapper">
+    <div class="profile-btn" onclick="toggleProfile()">
+      <img id="headerAvatar" src="https://i.pravatar.cc/150?img=12">
+      <span id="headerName">Admin</span>
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="profile-dropdown" id="profileMenu">
+      <a href="profile.html"><i class="fa fa-user"></i> Profile</a>
+      <a href="#" onclick="logout()"><i class="fa fa-right-from-bracket"></i> Logout</a>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE CARD -->
+<div class="profile-card">
+
+  <div class="profile-top">
+    <div>
+      <img id="avatarPreview" class="profile-avatar" src="https://i.pravatar.cc/150?img=12">
+      <label class="upload-btn">
+        Change Photo
+        <input type="file" id="avatarInput" hidden>
+      </label>
+    </div>
+
+    <div class="profile-info">
+      <h2 id="displayName">Admin</h2>
+      <p>Administrator Account</p>
+    </div>
+  </div>
+
+  <form onsubmit="saveProfile(event)">
+    <div class="form-grid">
+
+      <div>
+        <label>Full Name</label>
+        <input id="nameInput" placeholder="Admin Name">
+      </div>
+
+      <div>
+        <label>Email</label>
+        <input id="emailInput" type="email" placeholder="admin@example.com">
+      </div>
+
+      <div class="full">
+        <label>Username</label>
+        <input id="usernameInput" placeholder="admin">
+      </div>
+
+    </div>
+
+    <button class="save-btn">Save Changes</button>
+  </form>
+
+</div>
+
+</div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+/* ======================================================
+   AUTH GUARD
+====================================================== */
+(function(){
+  if(localStorage.getItem("adminAuth")!=="true"){
+    location.replace("adminlogin.html");
+  }
+})();
+
+/* ======================================================
+   LOAD PROFILE
+====================================================== */
+let profile = JSON.parse(localStorage.getItem("adminProfile")) || {
+  name:"Admin",
+  email:"admin@example.com",
+  username:"admin",
+  avatar:"https://i.pravatar.cc/150?img=12"
+};
+
+function loadProfile(){
+  nameInput.value = profile.name;
+  emailInput.value = profile.email;
+  usernameInput.value = profile.username;
+  avatarPreview.src = profile.avatar;
+  headerAvatar.src = profile.avatar;
+  headerName.innerText = profile.name;
+  displayName.innerText = profile.name;
+}
+
+loadProfile();
+
+/* ======================================================
+   AVATAR UPLOAD
+====================================================== */
+avatarInput.addEventListener("change",()=>{
+  const file = avatarInput.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    profile.avatar = reader.result;
+    avatarPreview.src = reader.result;
+    headerAvatar.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ======================================================
+   SAVE PROFILE
+====================================================== */
+function saveProfile(e){
+  e.preventDefault();
+
+  profile.name = nameInput.value.trim();
+  profile.email = emailInput.value.trim();
+  profile.username = usernameInput.value.trim();
+
+  localStorage.setItem("adminProfile",JSON.stringify(profile));
+  loadProfile();
+  alert("Profile updated successfully");
+}
+
+/* ======================================================
+   DROPDOWN
+====================================================== */
+function toggleProfile(){
+  const menu=document.getElementById("profileMenu");
+  menu.style.display=menu.style.display==="block"?"none":"block";
+}
+
+window.onclick=(e)=>{
+  if(!e.target.closest(".profile-wrapper")){
+    profileMenu.style.display="none";
+  }
+};
+
+/* ======================================================
+   LOGOUT
+====================================================== */
+function logout(){
+  if(confirm("Logout admin?")){
+    localStorage.removeItem("adminAuth");
+    location.href="adminlogin.html";
+  }
+}
+
+</script>
+
+</body>
+</html>

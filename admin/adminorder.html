@@ -4,110 +4,251 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin - Orders</title>
+
+  <!-- ======================================================
+       TAILWIND CSS CDN
+  ====================================================== -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 text-gray-900">
 
-<!-- HEADER -->
-<header class="bg-red-600 text-white p-4 text-center text-xl font-bold shadow">
-  Admin - All Orders
+<!-- ======================================================
+     ADMIN AUTH GUARD (NO DIRECT ACCESS)
+====================================================== -->
+<script>
+(function adminGuard(){
+  const isAdmin = localStorage.getItem("adminAuth");
+  if(isAdmin !== "true"){
+    location.replace("adminlogin.html");
+  }
+})();
+</script>
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+<header class="bg-red-600 text-white p-4 shadow flex justify-between items-center">
+  <span class="text-xl font-bold">Admin - All Orders</span>
+
+  <button
+    onclick="logoutAdmin()"
+    class="bg-white text-red-600 px-4 py-1 rounded-lg font-semibold hover:bg-gray-100 transition">
+    Logout
+  </button>
 </header>
 
+<!-- ======================================================
+     MAIN
+====================================================== -->
 <main class="max-w-7xl mx-auto p-6">
 
-  <!-- CONTROLS -->
+  <!-- ======================================================
+       CONTROLS
+  ====================================================== -->
   <div class="flex flex-col sm:flex-row gap-4 mb-6">
+
+    <!-- SEARCH -->
     <input
       id="searchInput"
       placeholder="Search Order ID or Customer Name"
-      class="flex-1 border rounded-lg p-2"
+      class="flex-1 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-400"
       oninput="renderOrders()"
     />
 
-    <select id="statusFilter" class="border rounded-lg p-2" onchange="renderOrders()">
+    <!-- STATUS FILTER -->
+    <select
+      id="statusFilter"
+      class="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+      onchange="renderOrders()"
+    >
       <option value="all">All Status</option>
       <option value="Pending">Pending</option>
       <option value="Paid">Paid</option>
       <option value="Shipped">Shipped</option>
       <option value="Cancelled">Cancelled</option>
     </select>
+
   </div>
 
-  <!-- ORDERS -->
+  <!-- ======================================================
+       ORDERS LIST
+  ====================================================== -->
   <div id="ordersList" class="space-y-6"></div>
 
 </main>
 
+<!-- ======================================================
+     SCRIPT
+====================================================== -->
 <script>
-const ordersList = document.getElementById("ordersList");
-const searchInput = document.getElementById("searchInput");
+
+/* ======================================================
+   ELEMENT REFERENCES
+====================================================== */
+const ordersList   = document.getElementById("ordersList");
+const searchInput  = document.getElementById("searchInput");
 const statusFilter = document.getElementById("statusFilter");
 
-let orders = JSON.parse(localStorage.getItem("orders")) || [];
+/* ======================================================
+   LOAD ORDERS (SAFE)
+====================================================== */
+let orders = [];
 
-/* UPDATE STATUS */
-function updateOrderStatus(orderId, status) {
-  const order = orders.find(o => o.id === orderId);
-  if (!order) return;
-  order.status = status;
-  localStorage.setItem("orders", JSON.stringify(orders));
+try{
+  orders = JSON.parse(localStorage.getItem("orders")) || [];
+  if(!Array.isArray(orders)) orders = [];
+}catch(e){
+  orders = [];
+}
+
+/* ======================================================
+   LOGOUT ADMIN
+====================================================== */
+function logoutAdmin(){
+  if(confirm("Logout admin?")){
+    localStorage.removeItem("adminAuth");
+    location.href = "adminlogin.html";
+  }
+}
+
+/* ======================================================
+   UPDATE ORDER STATUS
+====================================================== */
+function updateOrderStatus(orderId, status){
+  const index = orders.findIndex(o => o.id === orderId);
+  if(index === -1) return;
+
+  orders[index].status = status;
+  persistOrders();
   renderOrders();
 }
 
-/* DELETE */
-function deleteOrder(orderId) {
-  if (!confirm("Delete this order?")) return;
+/* ======================================================
+   DELETE ORDER
+====================================================== */
+function deleteOrder(orderId){
+  if(!confirm("Delete this order?")) return;
+
   orders = orders.filter(o => o.id !== orderId);
-  localStorage.setItem("orders", JSON.stringify(orders));
+  persistOrders();
   renderOrders();
 }
 
-/* RENDER */
-function renderOrders() {
+/* ======================================================
+   SAVE TO STORAGE
+====================================================== */
+function persistOrders(){
+  localStorage.setItem("orders", JSON.stringify(orders));
+}
+
+/* ======================================================
+   GROUP ITEMS BY PRODUCT ID
+====================================================== */
+function groupItems(items){
+  const grouped = {};
+
+  items.forEach(item=>{
+    if(!grouped[item.id]){
+      grouped[item.id] = {
+        ...item,
+        qty: 0
+      };
+    }
+    grouped[item.id].qty++;
+  });
+
+  return Object.values(grouped);
+}
+
+/* ======================================================
+   STATUS COLOR HELPER
+====================================================== */
+function getStatusColor(status){
+  return {
+    Pending:   "text-yellow-600",
+    Paid:      "text-green-600",
+    Shipped:   "text-blue-600",
+    Cancelled: "text-red-600"
+  }[status] || "text-gray-600";
+}
+
+/* ======================================================
+   BORDER COLOR HELPER
+====================================================== */
+function getBorderColor(status){
+  return status === "Paid"
+    ? "border-green-500"
+    : status === "Cancelled"
+      ? "border-red-500"
+      : "border-yellow-500";
+}
+
+/* ======================================================
+   RENDER ORDERS
+====================================================== */
+function renderOrders(){
+
   ordersList.innerHTML = "";
 
+  /* ----------------------------------------------
+     COPY & SORT (LATEST FIRST)
+  ---------------------------------------------- */
   let filtered = [...orders].reverse();
 
-  const search = searchInput.value.toLowerCase();
-  if (search) {
-    filtered = filtered.filter(o =>
-      String(o.id).includes(search) ||
-      o.shipping.name.toLowerCase().includes(search)
-    );
+  /* ----------------------------------------------
+     SEARCH FILTER
+  ---------------------------------------------- */
+  const search = searchInput.value.toLowerCase().trim();
+
+  if(search){
+    filtered = filtered.filter(o=>{
+      const idMatch   = String(o.id || "").includes(search);
+      const nameMatch = (o.shipping?.name || "").toLowerCase().includes(search);
+      return idMatch || nameMatch;
+    });
   }
 
+  /* ----------------------------------------------
+     STATUS FILTER
+  ---------------------------------------------- */
   const status = statusFilter.value;
-  if (status !== "all") {
+  if(status !== "all"){
     filtered = filtered.filter(o => o.status === status);
   }
 
-  if (filtered.length === 0) {
-    ordersList.innerHTML = `<p class="text-center text-gray-500">No orders found.</p>`;
+  /* ----------------------------------------------
+     EMPTY STATE
+  ---------------------------------------------- */
+  if(filtered.length === 0){
+    ordersList.innerHTML = `
+      <p class="text-center text-gray-500 py-12">
+        No orders found.
+      </p>
+    `;
     return;
   }
 
+  /* ----------------------------------------------
+     LOOP ORDERS
+  ---------------------------------------------- */
   filtered.forEach(order => {
-    const statusColor = {
-      Pending: "text-yellow-600",
-      Paid: "text-green-600",
-      Shipped: "text-blue-600",
-      Cancelled: "text-red-600"
-    }[order.status] || "text-gray-600";
 
+    const statusColor = getStatusColor(order.status);
+    const borderColor = getBorderColor(order.status);
+
+    /* ITEMS */
     let itemsHTML = "";
-    const grouped = {};
-    order.items.forEach(item => {
-      if (!grouped[item.id]) grouped[item.id] = { ...item, qty: 0 };
-      grouped[item.id].qty++;
-    });
+    const items = groupItems(order.items || []);
 
-    Object.values(grouped).forEach(item => {
+    items.forEach(item=>{
       itemsHTML += `
         <div class="flex items-center justify-between text-sm">
           <div class="flex items-center gap-3">
-            <img src="${item.imgLocal || item.img || 'https://via.placeholder.com/50'}"
-                 class="w-10 h-10 rounded object-cover">
+            <img
+              src="${item.imgLocal || item.img || 'https://via.placeholder.com/50'}"
+              class="w-10 h-10 rounded object-cover"
+            >
             <span>${item.title} × ${item.qty}</span>
           </div>
           <span>$${(item.price * item.qty).toFixed(2)}</span>
@@ -115,39 +256,54 @@ function renderOrders() {
       `;
     });
 
+    /* ORDER CARD */
     ordersList.innerHTML += `
-      <div class="bg-white rounded-2xl shadow p-5 border-l-4 ${order.status === 'Paid' ? 'border-green-500' : 'border-yellow-500'}">
+      <div class="bg-white rounded-2xl shadow p-5 border-l-4 ${borderColor}">
 
         <div class="flex justify-between items-center mb-2">
           <h3 class="font-bold">Order #${order.id}</h3>
-          <span class="text-sm text-gray-500">${order.date}</span>
+          <span class="text-sm text-gray-500">${order.date || "-"}</span>
         </div>
 
-        <div class="space-y-1 mb-3">${itemsHTML}</div>
+        <div class="space-y-1 mb-3">
+          ${itemsHTML}
+        </div>
 
-        <p class="font-semibold mb-1">Total: $${order.total.toFixed(2)}</p>
+        <p class="font-semibold mb-1">
+          Total: $${Number(order.total || 0).toFixed(2)}
+        </p>
 
         <p class="text-sm text-gray-600">
-          ${order.shipping.name}, ${order.shipping.address}, ${order.shipping.city} (${order.shipping.zip})
+          ${order.shipping?.name || "N/A"},
+          ${order.shipping?.address || ""},
+          ${order.shipping?.city || ""}
+          (${order.shipping?.zip || ""})
         </p>
 
         <div class="flex flex-wrap items-center gap-4 mt-3">
-          <span class="text-sm">Payment: <b>${order.payment.toUpperCase()}</b></span>
+
+          <span class="text-sm">
+            Payment:
+            <b>${(order.payment || "N/A").toUpperCase()}</b>
+          </span>
 
           <select
             class="border rounded px-2 py-1 font-semibold ${statusColor}"
-            onchange="updateOrderStatus(${order.id}, this.value)">
-            <option ${order.status === "Pending" && "selected"}>Pending</option>
-            <option ${order.status === "Paid" && "selected"}>Paid</option>
-            <option ${order.status === "Shipped" && "selected"}>Shipped</option>
-            <option ${order.status === "Cancelled" && "selected"}>Cancelled</option>
+            onchange="updateOrderStatus(${order.id}, this.value)"
+          >
+            <option ${order.status === "Pending"   ? "selected" : ""}>Pending</option>
+            <option ${order.status === "Paid"      ? "selected" : ""}>Paid</option>
+            <option ${order.status === "Shipped"   ? "selected" : ""}>Shipped</option>
+            <option ${order.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
           </select>
 
           <button
             onclick="deleteOrder(${order.id})"
-            class="ml-auto bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+            class="ml-auto bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+          >
             Delete
           </button>
+
         </div>
 
       </div>
@@ -155,7 +311,11 @@ function renderOrders() {
   });
 }
 
+/* ======================================================
+   INIT
+====================================================== */
 renderOrders();
+
 </script>
 
 </body>
