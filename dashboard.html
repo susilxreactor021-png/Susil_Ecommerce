@@ -5,10 +5,13 @@
 <title>MyStore | Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- FONT AWESOME -->
+<!-- ======================================================
+     FONT AWESOME
+====================================================== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+
 /* =========================================================
    ROOT VARIABLES
 ========================================================= */
@@ -207,7 +210,7 @@ header{
 }
 
 /* =========================================================
-   CART SLIDE PANEL
+   CART PANEL
 ========================================================= */
 .cart{
   position:fixed;
@@ -246,23 +249,16 @@ header{
   display:flex;
   gap:12px;
   margin-bottom:14px;
-  align-items:center;
 }
 
 .cart-item img{
   width:52px;
   height:52px;
   border-radius:10px;
-  object-fit:cover;
-}
-
-.cart-item h5{
-  font-size:14px;
 }
 
 .cart-controls{
   display:flex;
-  align-items:center;
   gap:8px;
   margin-top:6px;
 }
@@ -311,6 +307,7 @@ header{
   opacity:1;
   bottom:50px;
 }
+
 </style>
 </head>
 
@@ -330,7 +327,7 @@ header{
       <div class="menu">
         <a href="profile.html">My Profile</a>
         <a href="orders.html">My Orders</a>
-        <a href="#" onclick="Auth.logout()">Logout</a>
+        <a href="#" onclick="logout()">Logout</a>
       </div>
     </div>
   </div>
@@ -361,187 +358,142 @@ header{
 
 <script>
 /* =========================================================
-   BACKEND STORAGE LAYER
+   GLOBAL USER STATE
+========================================================= */
+let CURRENT_UID = null;
+
+/* =========================================================
+   STORAGE
 ========================================================= */
 const Storage = {
-  get(key, fallback=[]){
-    try{
-      return JSON.parse(localStorage.getItem(key)) || fallback;
-    }catch{
-      return fallback;
-    }
-  },
-  set(key,value){
-    localStorage.setItem(key,JSON.stringify(value));
-  }
+  get(k,f=[]){ try{ return JSON.parse(localStorage.getItem(k))||f }catch{ return f }},
+  set(k,v){ localStorage.setItem(k,JSON.stringify(v)) }
 };
 
 /* =========================================================
-   DATA SERVICES
+   SERVICES
 ========================================================= */
 const ProductService = {
-  all(){
-    return Storage.get("products_v1",[]);
-  }
+  all(){ return Storage.get("products_v1",[]) }
 };
 
 const CartService = {
-  all(){
-    return Storage.get("cart_v1",[]);
-  },
-  save(cart){
-    Storage.set("cart_v1",cart);
-  }
+  key(){ return `cart_${CURRENT_UID}` },
+  all(){ return Storage.get(this.key(),[]) },
+  save(c){ Storage.set(this.key(),c) }
 };
 
 const OrderService = {
+  key(){ return `orders_${CURRENT_UID}` },
   place(cart){
-    const orders = Storage.get("orders_v1",[]);
+    const orders = Storage.get(this.key(),[]);
     orders.push({
       id:Date.now(),
       items:cart,
       total:cart.reduce((t,i)=>t+i.price*i.qty,0),
       date:new Date().toISOString()
     });
-    Storage.set("orders_v1",orders);
+    Storage.set(this.key(),orders);
     CartService.save([]);
   }
 };
 
 /* =========================================================
-   UI STATE
+   UI
 ========================================================= */
 const UI = {
-  productsBox:document.getElementById("products"),
-  cart:document.getElementById("cart"),
-  cartItems:document.getElementById("cartItems"),
-  totalEl:document.getElementById("total"),
-  cartCount:document.getElementById("cartCount"),
+  productsBox:products,
+  cart:cart,
+  cartItems:cartItems,
+  totalEl:total,
+  cartCount:cartCount,
 
   renderProducts(){
-    const products = ProductService.all();
-    this.productsBox.innerHTML = "";
-
-    products.forEach((p,i)=>{
-      if(p.status !== "Active") return;
-
-      this.productsBox.innerHTML += `
-        <div class="card">
-          <img src="${p.img || 'https://via.placeholder.com/300'}">
-          <h4>${p.name}</h4>
-          <div class="price">$${p.price}</div>
-          <div class="actions">
-            <button class="buy" onclick="Cart.add(${i})">Add</button>
-            <button class="wish">❤</button>
-          </div>
-        </div>`;
+    const p = ProductService.all();
+    this.productsBox.innerHTML="";
+    p.forEach((x,i)=>{
+      if(x.status!=="Active")return;
+      this.productsBox.innerHTML+=`
+      <div class="card">
+        <img src="${x.img}">
+        <h4>${x.name}</h4>
+        <div class="price">$${x.price}</div>
+        <div class="actions">
+          <button class="buy" onclick="Cart.add(${i})">Add</button>
+          <button class="wish">❤</button>
+        </div>
+      </div>`;
     });
   },
 
   renderCart(){
-    const cart = CartService.all();
-    this.cartItems.innerHTML = "";
-    let total = 0;
-
-    cart.forEach((c,i)=>{
-      total += c.price * c.qty;
-      this.cartItems.innerHTML += `
-        <div class="cart-item">
-          <img src="${c.img || 'https://via.placeholder.com/50'}">
-          <div>
-            <h5>${c.name}</h5>
-            <div>$${c.price}</div>
-            <div class="cart-controls">
-              <button class="qty-btn" onclick="Cart.decrease(${i})">−</button>
-              <strong>${c.qty}</strong>
-              <button class="qty-btn" onclick="Cart.increase(${i})">+</button>
-            </div>
+    const c = CartService.all();
+    this.cartItems.innerHTML="";
+    let t=0;
+    c.forEach((x,i)=>{
+      t+=x.price*x.qty;
+      this.cartItems.innerHTML+=`
+      <div class="cart-item">
+        <img src="${x.img}">
+        <div>
+          <h5>${x.name}</h5>
+          <div>$${x.price}</div>
+          <div class="cart-controls">
+            <button class="qty-btn" onclick="Cart.decrease(${i})">−</button>
+            <strong>${x.qty}</strong>
+            <button class="qty-btn" onclick="Cart.increase(${i})">+</button>
           </div>
-        </div>`;
+        </div>
+      </div>`;
     });
-
-    this.totalEl.innerText = total;
-    this.cartCount.innerText = cart.reduce((a,b)=>a+b.qty,0);
+    this.totalEl.innerText=t;
+    this.cartCount.innerText=c.reduce((a,b)=>a+b.qty,0);
   },
 
   openCart(){ this.cart.classList.add("open"); this.renderCart(); },
   closeCart(){ this.cart.classList.remove("open"); },
-
-  toggleProfile(){
-    document.querySelector(".profile").classList.toggle("open");
-  },
+  toggleProfile(){ document.querySelector(".profile").classList.toggle("open"); },
 
   toast(){
-    const t=document.getElementById("toast");
-    t.classList.add("show");
-    setTimeout(()=>t.classList.remove("show"),2000);
+    toast.classList.add("show");
+    setTimeout(()=>toast.classList.remove("show"),2000);
   }
 };
 
 /* =========================================================
-   CART LOGIC
+   CART
 ========================================================= */
-const Cart = {
-  add(index){
-    const products = ProductService.all();
-    const cart = CartService.all();
-    const p = products[index];
-    const found = cart.find(i=>i.name===p.name);
-
-    if(found) found.qty++;
-    else cart.push({name:p.name,price:+p.price,img:p.img,qty:1});
-
-    CartService.save(cart);
+const Cart={
+  add(i){
+    const p=ProductService.all()[i];
+    const c=CartService.all();
+    const f=c.find(x=>x.name===p.name);
+    f?f.qty++:c.push({name:p.name,price:+p.price,img:p.img,qty:1});
+    CartService.save(c);
     UI.renderCart();
     UI.toast();
   },
-
-  increase(i){
-    const cart = CartService.all();
-    cart[i].qty++;
-    CartService.save(cart);
-    UI.renderCart();
-  },
-
-  decrease(i){
-    const cart = CartService.all();
-    cart[i].qty--;
-    if(cart[i].qty<=0) cart.splice(i,1);
-    CartService.save(cart);
-    UI.renderCart();
-  }
+  increase(i){ const c=CartService.all(); c[i].qty++; CartService.save(c); UI.renderCart(); },
+  decrease(i){ const c=CartService.all(); c[i].qty--; if(c[i].qty<=0)c.splice(i,1); CartService.save(c); UI.renderCart(); }
 };
 
 /* =========================================================
    ORDER
 ========================================================= */
-const Order = {
+const Order={
   checkout(){
-    const cart = CartService.all();
-    if(!cart.length) return alert("Cart is empty");
-    OrderService.place(cart);
+    const c=CartService.all();
+    if(!c.length) return alert("Cart empty");
+    OrderService.place(c);
     UI.renderCart();
-    alert("Order placed successfully");
+    alert("Order placed");
   }
 };
-
-/* =========================================================
-   AUTH
-========================================================= */
-const Auth = {
-  logout(){
-    localStorage.clear();
-    location.href="index.html";
-  }
-};
-
-/* =========================================================
-   INIT
-========================================================= */
-UI.renderProducts();
-UI.renderCart();
 </script>
 
+<!-- ======================================================
+     FIREBASE AUTH + LOGOUT
+====================================================== -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -552,17 +504,19 @@ const firebaseConfig={
   projectId:"susil-store"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
 
 onAuthStateChanged(auth,user=>{
-  if(!user) location.href="index.html";
-  document.getElementById("avatar").src = user.photoURL || "https://i.pravatar.cc/150";
+  if(!user){ location.href="index.html"; return; }
+  CURRENT_UID=user.uid;
+  avatar.src=user.photoURL||"https://i.pravatar.cc/150";
+  UI.renderProducts();
+  UI.renderCart();
 });
 
-window.logout = async ()=>{
+window.logout=async()=>{
   await signOut(auth);
-  localStorage.clear();
   location.href="index.html";
 };
 </script>
