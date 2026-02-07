@@ -20,7 +20,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <!-- ======================================================
-     TAILWIND CONFIG (FUTURE SAFE)
+     TAILWIND CONFIG
 ====================================================== -->
 <script>
 tailwind.config = {
@@ -35,110 +35,62 @@ tailwind.config = {
 </script>
 
 <!-- ======================================================
-     CUSTOM STYLES (NO DESIGN CHANGE)
+     CUSTOM STYLES (UNCHANGED)
 ====================================================== -->
 <style>
+*{scroll-behavior:smooth;}
 
-/* ------------------------------------------------------
-   GLOBAL RESET (SAFE)
------------------------------------------------------- */
-*{
-  scroll-behavior:smooth;
-}
-
-/* ------------------------------------------------------
-   SCROLL REVEAL ANIMATION
------------------------------------------------------- */
 .reveal{
   opacity:0;
   transform:translateY(40px);
   transition:all .8s ease;
 }
-
 .reveal.show{
   opacity:1;
   transform:translateY(0);
 }
-
-/* ------------------------------------------------------
-   BUTTON INTERACTION
------------------------------------------------------- */
-button:active{
-  transform:scale(0.98);
-}
-
-/* ------------------------------------------------------
-   IMAGE SAFETY
------------------------------------------------------- */
-img{
-  user-select:none;
-  pointer-events:none;
-}
-
-/* ------------------------------------------------------
-   FUTURE DARK MODE PREP (DISABLED)
------------------------------------------------------- */
-/*
-.dark body{
-  background:#000;
-}
-*/
-
+button:active{transform:scale(0.98);}
+img{user-select:none;pointer-events:none;}
 </style>
+
 </head>
 
 <body class="bg-gradient-to-br from-orange-500 via-orange-400 to-red-500 overflow-x-hidden">
 
-<!-- ======================================================
-     ACCESSIBILITY HELPERS (NON-VISIBLE)
-====================================================== -->
 <a href="#login" class="sr-only">Skip to login</a>
 
 <!-- ======================================================
-     HERO SECTION
+     HERO
 ====================================================== -->
 <section class="min-h-screen flex items-center justify-center text-white px-6 reveal">
-
   <div class="max-w-5xl grid lg:grid-cols-2 gap-12 items-center">
 
-    <!-- LEFT CONTENT -->
     <div>
-
       <h1 class="text-4xl lg:text-5xl font-extrabold mb-6">
-        Welcome to
-        <span class="text-yellow-300">Susil Store</span>
+        Welcome to <span class="text-yellow-300">Susil Store</span>
       </h1>
-
       <p class="text-lg opacity-90 mb-8">
         Shop premium electronics with secure login,
         fast delivery, and trusted payments.
       </p>
-
-      <a
-        href="#login"
+      <a href="#login"
         class="inline-block bg-white text-orange-600 px-6 py-3 rounded-xl font-bold">
         Get Started
       </a>
-
     </div>
 
-    <!-- RIGHT IMAGE -->
-    <img
-      src="Images/laptop rog strix.jpg"
-      class="rounded-3xl shadow-2xl reveal"
-      alt="Laptop">
+    <img src="Images/laptop rog strix.jpg"
+         class="rounded-3xl shadow-2xl reveal"
+         alt="Laptop">
 
   </div>
-
 </section>
 
 <!-- ======================================================
-     FEATURES SECTION
+     FEATURES
 ====================================================== -->
 <section class="bg-white py-20">
-
   <div class="max-w-6xl mx-auto px-6">
-
     <h2 class="text-3xl font-extrabold text-center mb-12 reveal">
       Why Choose Susil Store?
     </h2>
@@ -148,39 +100,30 @@ img{
       <div class="rounded-2xl shadow-lg p-6 text-center reveal">
         <img src="Images/Fast Delivery.avif" class="h-40 mx-auto mb-4 rounded-xl">
         <h3 class="font-bold text-lg mb-2">Fast Delivery</h3>
-        <p class="text-gray-500 text-sm">
-          Lightning-fast delivery across the country.
-        </p>
+        <p class="text-gray-500 text-sm">Lightning-fast delivery.</p>
       </div>
 
       <div class="rounded-2xl shadow-lg p-6 text-center reveal">
         <img src="Images/Secure Payments.webp" class="h-40 mx-auto mb-4 rounded-xl">
         <h3 class="font-bold text-lg mb-2">Secure Payments</h3>
-        <p class="text-gray-500 text-sm">
-          Google-secured authentication and payments.
-        </p>
+        <p class="text-gray-500 text-sm">Google secured checkout.</p>
       </div>
 
       <div class="rounded-2xl shadow-lg p-6 text-center reveal">
         <img src="Images/Top Quality.jpg" class="h-40 mx-auto mb-4 rounded-xl">
         <h3 class="font-bold text-lg mb-2">Top Quality</h3>
-        <p class="text-gray-500 text-sm">
-          Premium, verified, and trusted products.
-        </p>
+        <p class="text-gray-500 text-sm">Premium verified products.</p>
       </div>
 
     </div>
   </div>
-
 </section>
 
 <!-- ======================================================
-     PRODUCT PREVIEW SECTION
+     PRODUCTS
 ====================================================== -->
 <section class="py-20 bg-gray-50">
-
   <div class="max-w-6xl mx-auto px-6">
-
     <h2 class="text-3xl font-extrabold text-center mb-12 reveal">
       Popular Products
     </h2>
@@ -190,79 +133,59 @@ img{
       <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
         <img src="Images/ipad 10th generation.jpg" class="rounded-xl mb-4">
         <h4 class="font-bold">iPad 10th Generation</h4>
-        <p class="text-sm text-gray-500">Powerful. Portable. Modern.</p>
+        <p class="text-sm text-gray-500">Powerful & modern.</p>
       </div>
 
       <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
         <img src="Images/samsung s25 ultra.jpg" class="rounded-xl mb-4">
         <h4 class="font-bold">Samsung S25 Ultra</h4>
-        <p class="text-sm text-gray-500">Next-gen smartphone experience.</p>
+        <p class="text-sm text-gray-500">Next-gen smartphone.</p>
       </div>
 
       <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
         <img src="Images/laptop rog strix.jpg" class="rounded-xl mb-4">
         <h4 class="font-bold">ROG Strix Laptop</h4>
-        <p class="text-sm text-gray-500">High-performance gaming beast.</p>
+        <p class="text-sm text-gray-500">Gaming powerhouse.</p>
       </div>
 
     </div>
   </div>
-
 </section>
 
 <!-- ======================================================
-     LOGIN SECTION
+     LOGIN
 ====================================================== -->
 <section id="login" class="py-20 flex justify-center reveal">
-
   <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center">
 
-    <h2 class="text-3xl font-extrabold text-orange-600 mb-2">
-      Login
-    </h2>
+    <h2 class="text-3xl font-extrabold text-orange-600 mb-2">Login</h2>
+    <p class="text-gray-500 mb-6">Continue with Google</p>
 
-    <p class="text-gray-500 mb-6">
-      Continue with Google
-    </p>
-
-    <button
-      id="googleLogin"
+    <button id="googleLogin"
       class="flex items-center justify-center gap-3 w-full border py-3 rounded-xl font-semibold hover:bg-gray-50 transition">
-
       <img src="https://img.icons8.com/color/48/google-logo.png" class="h-6">
       Continue with Google
-
     </button>
 
   </div>
-
 </section>
 
-<!-- ======================================================
-     FOOTER
-====================================================== -->
 <footer class="text-center text-white/80 text-sm py-6 reveal">
   © 2026 Susil Store. All rights reserved.
 </footer>
 
 <!-- ======================================================
-     SCROLL REVEAL SCRIPT
+     SCROLL REVEAL
 ====================================================== -->
 <script>
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add("show");
-    }
-  });
-},{ threshold:0.15 });
-
-document.querySelectorAll(".reveal")
-  .forEach(el => observer.observe(el));
+const observer=new IntersectionObserver(e=>{
+  e.forEach(x=>x.isIntersecting&&x.target.classList.add("show"))
+},{threshold:.15});
+document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
 </script>
 
 <!-- ======================================================
-     FIREBASE AUTH + MOBILE FIX
+     FIREBASE AUTH (MOBILE FIXED)
 ====================================================== -->
 <script type="module">
 
@@ -273,7 +196,9 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import {
@@ -284,95 +209,74 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* ------------------------------------------------------
-   FIREBASE CONFIG
------------------------------------------------------- */
-const firebaseConfig = {
-  apiKey: "AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
-  authDomain: "susil-store.firebaseapp.com",
-  projectId: "susil-store",
-  storageBucket: "susil-store.firebasestorage.app",
-  messagingSenderId: "502951690223",
-  appId: "1:502951690223:web:73152503cc08c4e8ab801a"
+const firebaseConfig={
+  apiKey:"AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
+  authDomain:"susil-store.firebaseapp.com",
+  projectId:"susil-store",
+  storageBucket:"susil-store.firebasestorage.app",
+  messagingSenderId:"502951690223",
+  appId:"1:502951690223:web:73152503cc08c4e8ab801a"
 };
 
-/* ------------------------------------------------------
-   INIT
------------------------------------------------------- */
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+await setPersistence(auth,browserLocalPersistence);
 
-/* ------------------------------------------------------
-   DEVICE CHECK
------------------------------------------------------- */
-const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const db=getFirestore(app);
+const provider=new GoogleAuthProvider();
+provider.setCustomParameters({prompt:"select_account"});
 
-/* ------------------------------------------------------
-   SAVE USER
------------------------------------------------------- */
+const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 async function saveUser(user){
-  const ref = doc(db, "users", user.uid);
-  const snap = await getDoc(ref);
-
+  const ref=doc(db,"users",user.uid);
+  const snap=await getDoc(ref);
   if(!snap.exists()){
     await setDoc(ref,{
-      uid: user.uid,
-      name: user.displayName,
-      email: user.email,
-      photo: user.photoURL,
-      role: "User",
-      status: "Active",
-      createdAt: serverTimestamp()
+      uid:user.uid,
+      name:user.displayName||"",
+      email:user.email||"",
+      photo:user.photoURL||"",
+      role:"User",
+      status:"Active",
+      createdAt:serverTimestamp()
     });
   }
 }
 
-/* ------------------------------------------------------
-   LOGIN HANDLER
------------------------------------------------------- */
-document.getElementById("googleLogin")
-.addEventListener("click", async () => {
+document.getElementById("googleLogin").addEventListener("click",async()=>{
   try{
     if(isMobile){
-      await signInWithRedirect(auth, provider);
+      await signInWithRedirect(auth,provider);
     }else{
-      const result = await signInWithPopup(auth, provider);
+      const result=await signInWithPopup(auth,provider);
       await saveUser(result.user);
-      window.location.href = "dashboard.html";
+      window.location.replace("dashboard.html");
     }
-  }catch(err){
-    console.error(err);
-    alert("Login failed. Please try again.");
+  }catch(e){
+    alert("Google login failed");
   }
 });
 
-/* ------------------------------------------------------
-   REDIRECT RESULT (MOBILE)
------------------------------------------------------- */
-getRedirectResult(auth).then(async result => {
-  if(result && result.user){
+getRedirectResult(auth).then(async result=>{
+  if(result?.user){
     await saveUser(result.user);
-    window.location.href = "dashboard.html";
+    window.location.replace("dashboard.html");
   }
 });
 
-/* ------------------------------------------------------
-   AUTO REDIRECT IF LOGGED IN
------------------------------------------------------- */
-onAuthStateChanged(auth, user => {
-  if(user){
-    window.location.href = "dashboard.html";
+let redirected=false;
+onAuthStateChanged(auth,async user=>{
+  if(!user||redirected)return;
+  const ref=doc(db,"users",user.uid);
+  const snap=await getDoc(ref);
+  if(snap.exists()){
+    redirected=true;
+    window.location.replace("dashboard.html");
   }
 });
 
 </script>
-
-<!-- ======================================================
-     END OF FILE
-     (400+ LINES, FUTURE READY)
-====================================================== -->
 
 </body>
 </html>
