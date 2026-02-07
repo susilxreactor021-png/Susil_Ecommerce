@@ -5,16 +5,10 @@
 <title>MyStore | Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ======================================================
-     FONT AWESOME
-====================================================== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-
-/* =========================================================
-   ROOT VARIABLES
-========================================================= */
+/* ================= ROOT ================= */
 :root{
   --primary:#0a3d91;
   --bg:#f4f6fa;
@@ -25,9 +19,7 @@
   --success:#16a34a;
 }
 
-/* =========================================================
-   RESET
-========================================================= */
+/* ================= RESET ================= */
 *{
   box-sizing:border-box;
   margin:0;
@@ -40,9 +32,7 @@ body{
   color:var(--text);
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
+/* ================= HEADER ================= */
 header{
   background:var(--primary);
   color:#fff;
@@ -83,9 +73,7 @@ header{
   font-size:12px;
 }
 
-/* =========================================================
-   PROFILE DROPDOWN
-========================================================= */
+/* ================= PROFILE ================= */
 .profile{
   position:relative;
   cursor:pointer;
@@ -107,7 +95,6 @@ header{
   border-radius:16px;
   box-shadow:0 20px 40px rgba(0,0,0,.25);
   display:none;
-  overflow:hidden;
 }
 
 .menu a{
@@ -126,29 +113,14 @@ header{
   display:block;
 }
 
-/* =========================================================
-   CONTAINER
-========================================================= */
+/* ================= CONTAINER ================= */
 .container{
   max-width:1400px;
   margin:auto;
   padding:30px;
 }
 
-/* =========================================================
-   SECTION
-========================================================= */
-.section{
-  margin-top:20px;
-}
-
-.section h3{
-  margin-bottom:18px;
-}
-
-/* =========================================================
-   PRODUCTS GRID
-========================================================= */
+/* ================= PRODUCTS ================= */
 .products{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
@@ -209,9 +181,7 @@ header{
   color:#991b1b;
 }
 
-/* =========================================================
-   CART PANEL
-========================================================= */
+/* ================= CART ================= */
 .cart{
   position:fixed;
   top:0;
@@ -236,7 +206,6 @@ header{
   padding:16px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
 }
 
 .cart-body{
@@ -260,7 +229,6 @@ header{
 .cart-controls{
   display:flex;
   gap:8px;
-  margin-top:6px;
 }
 
 .qty-btn{
@@ -270,7 +238,6 @@ header{
   background:var(--primary);
   color:white;
   border-radius:6px;
-  cursor:pointer;
 }
 
 .cart-footer{
@@ -287,9 +254,7 @@ header{
   border-radius:12px;
 }
 
-/* =========================================================
-   TOAST
-========================================================= */
+/* ================= TOAST ================= */
 .toast{
   position:fixed;
   bottom:30px;
@@ -307,7 +272,6 @@ header{
   opacity:1;
   bottom:50px;
 }
-
 </style>
 </head>
 
@@ -334,10 +298,8 @@ header{
 </header>
 
 <div class="container">
-  <div class="section">
-    <h3>Recommended Products</h3>
-    <div class="products" id="products"></div>
-  </div>
+  <h3>Recommended Products</h3>
+  <div class="products" id="products"></div>
 </div>
 
 <div class="cart" id="cart">
@@ -357,67 +319,31 @@ header{
 <div class="toast" id="toast">Added to cart</div>
 
 <script>
-/* =========================================================
-   GLOBAL USER STATE
-========================================================= */
-let CURRENT_UID = null;
+let CURRENT_UID=null;
 
-/* =========================================================
-   STORAGE
-========================================================= */
-const Storage = {
-  get(k,f=[]){ try{ return JSON.parse(localStorage.getItem(k))||f }catch{ return f }},
-  set(k,v){ localStorage.setItem(k,JSON.stringify(v)) }
+const Storage={
+  get:(k,f=[])=>JSON.parse(localStorage.getItem(k))||f,
+  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
 };
 
-/* =========================================================
-   SERVICES
-========================================================= */
-const ProductService = {
-  all(){ return Storage.get("products_v1",[]) }
+const ProductService={
+  all:()=>Storage.get("products_v1",[])
 };
 
-const CartService = {
-  key(){ return `cart_${CURRENT_UID}` },
-  all(){ return Storage.get(this.key(),[]) },
-  save(c){ Storage.set(this.key(),c) }
+const CartService={
+  all:()=>Storage.get("cart",[]),
+  save:c=>Storage.set("cart",c)
 };
 
-const OrderService = {
-  key(){ return `orders_${CURRENT_UID}` },
-  place(cart){
-    const orders = Storage.get(this.key(),[]);
-    orders.push({
-      id:Date.now(),
-      items:cart,
-      total:cart.reduce((t,i)=>t+i.price*i.qty,0),
-      date:new Date().toISOString()
-    });
-    Storage.set(this.key(),orders);
-    CartService.save([]);
-  }
-};
-
-/* =========================================================
-   UI
-========================================================= */
-const UI = {
-  productsBox:products,
-  cart:cart,
-  cartItems:cartItems,
-  totalEl:total,
-  cartCount:cartCount,
-
+const UI={
   renderProducts(){
-    const p = ProductService.all();
-    this.productsBox.innerHTML="";
-    p.forEach((x,i)=>{
-      if(x.status!=="Active")return;
-      this.productsBox.innerHTML+=`
+    products.innerHTML="";
+    ProductService.all().forEach((p,i)=>{
+      products.innerHTML+=`
       <div class="card">
-        <img src="${x.img}">
-        <h4>${x.name}</h4>
-        <div class="price">$${x.price}</div>
+        <img src="${p.img}">
+        <h4>${p.name}</h4>
+        <div class="price">$${p.price}</div>
         <div class="actions">
           <button class="buy" onclick="Cart.add(${i})">Add</button>
           <button class="wish">❤</button>
@@ -427,98 +353,82 @@ const UI = {
   },
 
   renderCart(){
-    const c = CartService.all();
-    this.cartItems.innerHTML="";
+    const c=CartService.all();
+    cartItems.innerHTML="";
     let t=0;
     c.forEach((x,i)=>{
       t+=x.price*x.qty;
-      this.cartItems.innerHTML+=`
+      cartItems.innerHTML+=`
       <div class="cart-item">
         <img src="${x.img}">
         <div>
           <h5>${x.name}</h5>
           <div>$${x.price}</div>
           <div class="cart-controls">
-            <button class="qty-btn" onclick="Cart.decrease(${i})">−</button>
+            <button class="qty-btn" onclick="Cart.dec(${i})">−</button>
             <strong>${x.qty}</strong>
-            <button class="qty-btn" onclick="Cart.increase(${i})">+</button>
+            <button class="qty-btn" onclick="Cart.inc(${i})">+</button>
           </div>
         </div>
       </div>`;
     });
-    this.totalEl.innerText=t;
-    this.cartCount.innerText=c.reduce((a,b)=>a+b.qty,0);
+    total.innerText=t;
+    cartCount.innerText=c.reduce((a,b)=>a+b.qty,0);
   },
 
-  openCart(){ this.cart.classList.add("open"); this.renderCart(); },
-  closeCart(){ this.cart.classList.remove("open"); },
-  toggleProfile(){ document.querySelector(".profile").classList.toggle("open"); },
+  openCart(){cart.classList.add("open");this.renderCart();},
+  closeCart(){cart.classList.remove("open");},
+  toggleProfile(){document.querySelector(".profile").classList.toggle("open");},
 
-  toast(){
+  toast(msg){
+    toast.innerText=msg;
     toast.classList.add("show");
     setTimeout(()=>toast.classList.remove("show"),2000);
   }
 };
 
-/* =========================================================
-   CART
-========================================================= */
 const Cart={
   add(i){
     const p=ProductService.all()[i];
     const c=CartService.all();
     const f=c.find(x=>x.name===p.name);
-    f?f.qty++:c.push({name:p.name,price:+p.price,img:p.img,qty:1});
+    f?f.qty++:c.push({...p,qty:1});
     CartService.save(c);
     UI.renderCart();
-    UI.toast();
+    UI.toast("Added to cart");
   },
-  increase(i){ const c=CartService.all(); c[i].qty++; CartService.save(c); UI.renderCart(); },
-  decrease(i){ const c=CartService.all(); c[i].qty--; if(c[i].qty<=0)c.splice(i,1); CartService.save(c); UI.renderCart(); }
+  inc:i=>{const c=CartService.all();c[i].qty++;CartService.save(c);UI.renderCart();},
+  dec:i=>{const c=CartService.all();c[i].qty--;if(c[i].qty<=0)c.splice(i,1);CartService.save(c);UI.renderCart();}
 };
 
-/* =========================================================
-   ORDER
-========================================================= */
 const Order={
   checkout(){
-    const c=CartService.all();
-    if(!c.length) return alert("Cart empty");
-    OrderService.place(c);
-    UI.renderCart();
-    alert("Order placed");
+    if(!CartService.all().length) return UI.toast("Cart empty");
+    location.href="checkout.html";
   }
 };
 </script>
 
-<!-- ======================================================
-     FIREBASE AUTH + LOGOUT
-====================================================== -->
+<!-- ================= FIREBASE ================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-const firebaseConfig={
+const app=initializeApp({
   apiKey:"AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
   authDomain:"susil-store.firebaseapp.com",
   projectId:"susil-store"
-};
+});
 
-const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
-
-onAuthStateChanged(auth,user=>{
-  if(!user){ location.href="index.html"; return; }
-  CURRENT_UID=user.uid;
-  avatar.src=user.photoURL||"https://i.pravatar.cc/150";
+onAuthStateChanged(auth,u=>{
+  if(!u) location.href="index.html";
+  avatar.src=u.photoURL||"https://i.pravatar.cc/150";
   UI.renderProducts();
   UI.renderCart();
 });
 
-window.logout=async()=>{
-  await signOut(auth);
-  location.href="index.html";
-};
+window.logout=async()=>{await signOut(auth);location.href="index.html";}
 </script>
 
 </body>
