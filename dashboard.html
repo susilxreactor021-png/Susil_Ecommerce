@@ -316,190 +316,232 @@ header{
 
 <body>
 
-<!-- =========================================================
-   HEADER
-========================================================= -->
 <header>
   <div class="logo"><i class="fa fa-store"></i> MyStore</div>
 
   <div class="header-right">
-    <div class="icon-btn" onclick="openCart()">
+    <div class="icon-btn" onclick="UI.openCart()">
       <i class="fa fa-cart-shopping"></i>
       <span id="cartCount">0</span>
     </div>
 
-    <div class="profile" onclick="toggleProfile()">
+    <div class="profile" onclick="UI.toggleProfile()">
       <img id="avatar">
       <div class="menu">
         <a href="profile.html">My Profile</a>
         <a href="orders.html">My Orders</a>
-        <a href="#" onclick="logout()">Logout</a>
+        <a href="#" onclick="Auth.logout()">Logout</a>
       </div>
     </div>
   </div>
 </header>
 
-<!-- =========================================================
-   MAIN CONTENT
-========================================================= -->
 <div class="container">
-
   <div class="section">
     <h3>Recommended Products</h3>
     <div class="products" id="products"></div>
   </div>
-
 </div>
 
-<!-- =========================================================
-   CART
-========================================================= -->
 <div class="cart" id="cart">
   <div class="cart-header">
     <h3>Your Cart</h3>
-    <i class="fa fa-xmark" onclick="closeCart()"></i>
+    <i class="fa fa-xmark" onclick="UI.closeCart()"></i>
   </div>
 
   <div class="cart-body" id="cartItems"></div>
 
   <div class="cart-footer">
     <strong>Total: $<span id="total">0</span></strong>
-    <button onclick="location.href='checkout.html'">Checkout</button>
+    <button onclick="Order.checkout()">Checkout</button>
   </div>
 </div>
 
 <div class="toast" id="toast">Added to cart</div>
 
-<!-- =========================================================
-   SCRIPT
-========================================================= -->
 <script>
-const productsBox = document.getElementById("products");
-const cartEl = document.getElementById("cart");
-const cartItems = document.getElementById("cartItems");
-const totalEl = document.getElementById("total");
-const cartCount = document.getElementById("cartCount");
+/* =========================================================
+   BACKEND STORAGE LAYER
+========================================================= */
+const Storage = {
+  get(key, fallback=[]){
+    try{
+      return JSON.parse(localStorage.getItem(key)) || fallback;
+    }catch{
+      return fallback;
+    }
+  },
+  set(key,value){
+    localStorage.setItem(key,JSON.stringify(value));
+  }
+};
 
-let products = JSON.parse(localStorage.getItem("products")) || [];
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+/* =========================================================
+   DATA SERVICES
+========================================================= */
+const ProductService = {
+  all(){
+    return Storage.get("products_v1",[]);
+  }
+};
 
-/* ===================== RENDER PRODUCTS ===================== */
-function renderProducts(){
-  productsBox.innerHTML = "";
+const CartService = {
+  all(){
+    return Storage.get("cart_v1",[]);
+  },
+  save(cart){
+    Storage.set("cart_v1",cart);
+  }
+};
 
-  products.forEach((p,i)=>{
-    if(p.status !== "Active") return;
-
-    productsBox.innerHTML += `
-      <div class="card">
-        <img src="${p.img || 'https://via.placeholder.com/300'}">
-        <h4>${p.name}</h4>
-        <div class="price">$${p.price}</div>
-        <div class="actions">
-          <button class="buy" onclick="addToCart(${i})">Add</button>
-          <button class="wish">❤</button>
-        </div>
-      </div>
-    `;
-  });
-}
-
-/* ===================== CART LOGIC ===================== */
-function addToCart(index){
-  const p = products[index];
-  const found = cart.find(item => item.name === p.name);
-
-  if(found){
-    found.qty++;
-  }else{
-    cart.push({
-      name:p.name,
-      price:Number(p.price),
-      img:p.img,
-      qty:1
+const OrderService = {
+  place(cart){
+    const orders = Storage.get("orders_v1",[]);
+    orders.push({
+      id:Date.now(),
+      items:cart,
+      total:cart.reduce((t,i)=>t+i.price*i.qty,0),
+      date:new Date().toISOString()
     });
+    Storage.set("orders_v1",orders);
+    CartService.save([]);
   }
+};
 
-  saveCart();
-  renderCart();
-  showToast();
-}
+/* =========================================================
+   UI STATE
+========================================================= */
+const UI = {
+  productsBox:document.getElementById("products"),
+  cart:document.getElementById("cart"),
+  cartItems:document.getElementById("cartItems"),
+  totalEl:document.getElementById("total"),
+  cartCount:document.getElementById("cartCount"),
 
-function increaseQty(i){
-  cart[i].qty++;
-  saveCart();
-  renderCart();
-}
+  renderProducts(){
+    const products = ProductService.all();
+    this.productsBox.innerHTML = "";
 
-function decreaseQty(i){
-  cart[i].qty--;
-  if(cart[i].qty <= 0){
-    cart.splice(i,1);
-  }
-  saveCart();
-  renderCart();
-}
+    products.forEach((p,i)=>{
+      if(p.status !== "Active") return;
 
-function saveCart(){
-  localStorage.setItem("cart",JSON.stringify(cart));
-  cartCount.innerText = cart.reduce((a,b)=>a+b.qty,0);
-}
-
-/* ===================== RENDER CART ===================== */
-function renderCart(){
-  cartItems.innerHTML = "";
-  let total = 0;
-
-  cart.forEach((c,i)=>{
-    total += c.price * c.qty;
-
-    cartItems.innerHTML += `
-      <div class="cart-item">
-        <img src="${c.img || 'https://via.placeholder.com/50'}">
-        <div>
-          <h5>${c.name}</h5>
-          <div>$${c.price}</div>
-          <div class="cart-controls">
-            <button class="qty-btn" onclick="decreaseQty(${i})">−</button>
-            <strong>${c.qty}</strong>
-            <button class="qty-btn" onclick="increaseQty(${i})">+</button>
+      this.productsBox.innerHTML += `
+        <div class="card">
+          <img src="${p.img || 'https://via.placeholder.com/300'}">
+          <h4>${p.name}</h4>
+          <div class="price">$${p.price}</div>
+          <div class="actions">
+            <button class="buy" onclick="Cart.add(${i})">Add</button>
+            <button class="wish">❤</button>
           </div>
-        </div>
-      </div>
-    `;
-  });
+        </div>`;
+    });
+  },
 
-  totalEl.innerText = total;
-}
+  renderCart(){
+    const cart = CartService.all();
+    this.cartItems.innerHTML = "";
+    let total = 0;
 
-/* ===================== UI ===================== */
-function openCart(){
-  cartEl.classList.add("open");
-  renderCart();
-}
+    cart.forEach((c,i)=>{
+      total += c.price * c.qty;
+      this.cartItems.innerHTML += `
+        <div class="cart-item">
+          <img src="${c.img || 'https://via.placeholder.com/50'}">
+          <div>
+            <h5>${c.name}</h5>
+            <div>$${c.price}</div>
+            <div class="cart-controls">
+              <button class="qty-btn" onclick="Cart.decrease(${i})">−</button>
+              <strong>${c.qty}</strong>
+              <button class="qty-btn" onclick="Cart.increase(${i})">+</button>
+            </div>
+          </div>
+        </div>`;
+    });
 
-function closeCart(){
-  cartEl.classList.remove("open");
-}
+    this.totalEl.innerText = total;
+    this.cartCount.innerText = cart.reduce((a,b)=>a+b.qty,0);
+  },
 
-function toggleProfile(){
-  document.querySelector(".profile").classList.toggle("open");
-}
+  openCart(){ this.cart.classList.add("open"); this.renderCart(); },
+  closeCart(){ this.cart.classList.remove("open"); },
 
-function showToast(){
-  const t = document.getElementById("toast");
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),2000);
-}
+  toggleProfile(){
+    document.querySelector(".profile").classList.toggle("open");
+  },
 
-/* ===================== INIT ===================== */
-renderProducts();
-saveCart();
+  toast(){
+    const t=document.getElementById("toast");
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"),2000);
+  }
+};
+
+/* =========================================================
+   CART LOGIC
+========================================================= */
+const Cart = {
+  add(index){
+    const products = ProductService.all();
+    const cart = CartService.all();
+    const p = products[index];
+    const found = cart.find(i=>i.name===p.name);
+
+    if(found) found.qty++;
+    else cart.push({name:p.name,price:+p.price,img:p.img,qty:1});
+
+    CartService.save(cart);
+    UI.renderCart();
+    UI.toast();
+  },
+
+  increase(i){
+    const cart = CartService.all();
+    cart[i].qty++;
+    CartService.save(cart);
+    UI.renderCart();
+  },
+
+  decrease(i){
+    const cart = CartService.all();
+    cart[i].qty--;
+    if(cart[i].qty<=0) cart.splice(i,1);
+    CartService.save(cart);
+    UI.renderCart();
+  }
+};
+
+/* =========================================================
+   ORDER
+========================================================= */
+const Order = {
+  checkout(){
+    const cart = CartService.all();
+    if(!cart.length) return alert("Cart is empty");
+    OrderService.place(cart);
+    UI.renderCart();
+    alert("Order placed successfully");
+  }
+};
+
+/* =========================================================
+   AUTH
+========================================================= */
+const Auth = {
+  logout(){
+    localStorage.clear();
+    location.href="index.html";
+  }
+};
+
+/* =========================================================
+   INIT
+========================================================= */
+UI.renderProducts();
+UI.renderCart();
 </script>
 
-<!-- =========================================================
-   FIREBASE AUTH
-========================================================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -515,7 +557,7 @@ const auth = getAuth(app);
 
 onAuthStateChanged(auth,user=>{
   if(!user) location.href="index.html";
-  document.getElementById("avatar").src = user.photoURL;
+  document.getElementById("avatar").src = user.photoURL || "https://i.pravatar.cc/150";
 });
 
 window.logout = async ()=>{

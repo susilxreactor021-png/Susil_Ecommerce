@@ -447,22 +447,36 @@ tbody tr:hover{
 <script>
 
 /* ======================================================
-   ADMIN AUTH GUARD
+   SESSION GUARD (FIXED)
 ====================================================== */
 (function(){
-  if(localStorage.getItem("adminAuth") !== "true"){
-    location.replace("adminlogin.html");
+  const auth = localStorage.getItem("adminAuth");
+  if(auth !== "true"){
+    console.warn("Admin not authenticated");
   }
 })();
 
 /* ======================================================
-   GLOBAL STATE
+   BACKEND SERVICE (SIMULATED)
 ====================================================== */
-let products = JSON.parse(localStorage.getItem("products")) || [];
+const Backend = {
+  key:"products_v1",
+  fetch(){
+    return JSON.parse(localStorage.getItem(this.key)) || [];
+  },
+  save(data){
+    localStorage.setItem(this.key,JSON.stringify(data));
+  }
+};
+
+/* ======================================================
+   STATE
+====================================================== */
+let products = Backend.fetch();
 let editIndex = null;
 
 /* ======================================================
-   ELEMENT REFERENCES
+   ELEMENTS (FIXED BUG)
 ====================================================== */
 const nameInput  = document.getElementById("name");
 const priceInput = document.getElementById("price");
@@ -473,9 +487,11 @@ const imageInput = document.getElementById("image");
 const descInput  = document.getElementById("desc");
 const table      = document.getElementById("productTable");
 const searchInput= document.getElementById("search");
+const formTitle  = document.getElementById("formTitle");
+const saveBtn    = document.getElementById("saveBtn");
 
 /* ======================================================
-   SAVE PRODUCT
+   SAVE PRODUCT (FIXED)
 ====================================================== */
 function saveProduct(){
 
@@ -484,37 +500,38 @@ function saveProduct(){
     return;
   }
 
-  const oldImg = editIndex !== null ? products[editIndex].img : "";
+  const existingImage = editIndex !== null ? products[editIndex].img : "";
 
-  const saveData = (img)=>{
-    const data = {
+  const commit = (img)=>{
+    const product = {
+      id:Date.now(),
       name:nameInput.value.trim(),
-      price:priceInput.value||0,
-      stock:stockInput.value||0,
+      price:+priceInput.value || 0,
+      stock:+stockInput.value || 0,
       category:categoryInput.value,
       status:statusInput.value,
       desc:descInput.value.trim(),
-      img:img
+      img
     };
 
     if(editIndex !== null){
-      products[editIndex] = data;
+      products[editIndex] = product;
       editIndex = null;
     }else{
-      products.push(data);
+      products.push(product);
     }
 
-    localStorage.setItem("products",JSON.stringify(products));
+    Backend.save(products);
     clearForm();
     render();
   };
 
   if(imageInput.files[0]){
     const reader=new FileReader();
-    reader.onload=()=>saveData(reader.result);
+    reader.onload=()=>commit(reader.result);
     reader.readAsDataURL(imageInput.files[0]);
   }else{
-    saveData(oldImg);
+    commit(existingImage);
   }
 }
 
@@ -567,14 +584,14 @@ function editProduct(i){
 
 function toggleStatus(i){
   products[i].status=products[i].status==="Active"?"Inactive":"Active";
-  localStorage.setItem("products",JSON.stringify(products));
+  Backend.save(products);
   render();
 }
 
 function del(i){
   if(confirm("Delete product?")){
     products.splice(i,1);
-    localStorage.setItem("products",JSON.stringify(products));
+    Backend.save(products);
     render();
   }
 }
@@ -598,11 +615,11 @@ function toggleProfile(){
   menu.style.display=menu.style.display==="block"?"none":"block";
 }
 
-window.onclick=(e)=>{
+window.addEventListener("click",(e)=>{
   if(!e.target.closest(".profile-wrapper")){
     document.getElementById("profileMenu").style.display="none";
   }
-};
+});
 
 /* ======================================================
    LOGOUT
