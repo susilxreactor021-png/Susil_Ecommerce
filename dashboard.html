@@ -8,427 +8,682 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* ================= ROOT ================= */
+
 :root{
-  --primary:#0a3d91;
-  --bg:#f4f6fa;
-  --card:#ffffff;
-  --text:#1e293b;
-  --muted:#64748b;
-  --danger:#dc2626;
-  --success:#16a34a;
+--primary:#0a3d91;
+--bg:#f4f6fa;
+--card:#ffffff;
+--text:#1e293b;
+--muted:#64748b;
+--danger:#dc2626;
+--success:#16a34a;
 }
 
-/* ================= RESET ================= */
 *{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:"Segoe UI",Arial,sans-serif;
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:"Segoe UI",Arial,sans-serif;
 }
 
 body{
-  background:var(--bg);
-  color:var(--text);
+background:var(--bg);
+color:var(--text);
 }
 
-/* ================= HEADER ================= */
+/* HEADER */
+
 header{
-  background:var(--primary);
-  color:#fff;
-  padding:14px 22px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:100;
+background:var(--primary);
+color:white;
+padding:14px 24px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:sticky;
+top:0;
+z-index:100;
 }
 
 .logo{
-  font-size:20px;
-  font-weight:600;
+font-size:20px;
+font-weight:600;
 }
 
 .header-right{
-  display:flex;
-  gap:20px;
-  align-items:center;
+display:flex;
+align-items:center;
+gap:22px;
 }
 
 .icon-btn{
-  position:relative;
-  cursor:pointer;
-  font-size:20px;
+position:relative;
+cursor:pointer;
+font-size:20px;
 }
 
 .icon-btn span{
-  position:absolute;
-  top:-6px;
-  right:-8px;
-  background:#facc15;
-  color:black;
-  border-radius:50%;
-  padding:2px 6px;
-  font-size:12px;
+position:absolute;
+top:-6px;
+right:-8px;
+background:#facc15;
+color:black;
+border-radius:50%;
+padding:2px 6px;
+font-size:12px;
 }
 
-/* ================= PROFILE ================= */
+/* PROFILE */
+
 .profile{
-  position:relative;
-  cursor:pointer;
+position:relative;
+cursor:pointer;
 }
 
 .profile img{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  border:2px solid white;
+width:40px;
+height:40px;
+border-radius:50%;
+border:2px solid white;
+object-fit:cover;
 }
 
 .menu{
-  position:absolute;
-  right:0;
-  top:55px;
-  background:#fff;
-  width:220px;
-  border-radius:16px;
-  box-shadow:0 20px 40px rgba(0,0,0,.25);
-  display:none;
+position:absolute;
+right:0;
+top:55px;
+background:white;
+width:220px;
+border-radius:16px;
+box-shadow:0 20px 40px rgba(0,0,0,.25);
+display:none;
+overflow:hidden;
 }
 
 .menu a{
-  display:block;
-  padding:14px 16px;
-  color:var(--text);
-  text-decoration:none;
-  font-size:14px;
+display:block;
+padding:14px 16px;
+text-decoration:none;
+color:var(--text);
+font-size:14px;
 }
 
 .menu a:hover{
-  background:#f1f5f9;
+background:#f1f5f9;
 }
 
 .profile.open .menu{
-  display:block;
+display:block;
 }
 
-/* ================= CONTAINER ================= */
+/* CONTAINER */
+
 .container{
-  max-width:1400px;
-  margin:auto;
-  padding:30px;
+max-width:1400px;
+margin:auto;
+padding:30px;
 }
 
-/* ================= PRODUCTS ================= */
+/* SEARCH */
+
+.search-bar{
+max-width:600px;
+margin:auto;
+margin-top:20px;
+}
+
+.search-bar input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #ddd;
+}
+
+/* PRODUCTS */
+
 .products{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:22px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:22px;
+margin-top:25px;
 }
 
 .card{
-  background:var(--card);
-  border-radius:18px;
-  padding:14px;
-  box-shadow:0 12px 30px rgba(0,0,0,.1);
-  display:flex;
-  flex-direction:column;
-  transition:.3s;
+background:white;
+border-radius:18px;
+padding:14px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+display:flex;
+flex-direction:column;
+transition:.25s;
 }
 
 .card:hover{
-  transform:translateY(-6px);
+transform:translateY(-6px);
 }
 
 .card img{
-  height:180px;
-  object-fit:cover;
-  border-radius:12px;
+height:180px;
+object-fit:cover;
+border-radius:12px;
 }
 
 .card h4{
-  margin-top:10px;
+margin-top:10px;
 }
 
 .price{
-  color:var(--primary);
-  font-weight:700;
-  margin-top:6px;
+color:var(--primary);
+font-weight:700;
+margin-top:6px;
 }
 
 .actions{
-  display:flex;
-  gap:10px;
-  margin-top:auto;
+display:flex;
+gap:10px;
+margin-top:auto;
 }
 
 .actions button{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
+flex:1;
+padding:12px;
+border:none;
+border-radius:12px;
+cursor:pointer;
 }
 
 .buy{
-  background:var(--primary);
-  color:white;
+background:var(--primary);
+color:white;
 }
 
 .wish{
-  background:#fee2e2;
-  color:#991b1b;
+background:#fee2e2;
+color:#991b1b;
 }
 
-/* ================= CART ================= */
+/* CART */
+
 .cart{
-  position:fixed;
-  top:0;
-  right:-380px;
-  width:360px;
-  height:100%;
-  background:white;
-  box-shadow:-6px 0 25px rgba(0,0,0,.3);
-  transition:.3s;
-  display:flex;
-  flex-direction:column;
-  z-index:200;
+position:fixed;
+top:0;
+right:-380px;
+width:360px;
+height:100%;
+background:white;
+box-shadow:-6px 0 25px rgba(0,0,0,.3);
+transition:.35s;
+display:flex;
+flex-direction:column;
+z-index:200;
 }
 
 .cart.open{
-  right:0;
+right:0;
 }
 
 .cart-header{
-  background:var(--primary);
-  color:white;
-  padding:16px;
-  display:flex;
-  justify-content:space-between;
+background:var(--primary);
+color:white;
+padding:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 .cart-body{
-  flex:1;
-  overflow:auto;
-  padding:16px;
+flex:1;
+overflow:auto;
+padding:16px;
 }
 
 .cart-item{
-  display:flex;
-  gap:12px;
-  margin-bottom:14px;
+display:flex;
+gap:12px;
+margin-bottom:16px;
+align-items:center;
 }
 
 .cart-item img{
-  width:52px;
-  height:52px;
-  border-radius:10px;
+width:52px;
+height:52px;
+border-radius:10px;
+object-fit:cover;
 }
 
 .cart-controls{
-  display:flex;
-  gap:8px;
+display:flex;
+align-items:center;
+gap:8px;
+margin-top:6px;
 }
 
 .qty-btn{
-  width:26px;
-  height:26px;
-  border:none;
-  background:var(--primary);
-  color:white;
-  border-radius:6px;
+width:26px;
+height:26px;
+border:none;
+background:var(--primary);
+color:white;
+border-radius:6px;
+cursor:pointer;
 }
 
 .cart-footer{
-  padding:16px;
-  border-top:1px solid #e5e7eb;
+padding:16px;
+border-top:1px solid #e5e7eb;
 }
 
 .cart-footer button{
-  width:100%;
-  padding:14px;
-  background:var(--primary);
-  color:white;
-  border:none;
-  border-radius:12px;
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:var(--primary);
+color:white;
+cursor:pointer;
 }
 
-/* ================= TOAST ================= */
 .toast{
-  position:fixed;
-  bottom:30px;
-  left:50%;
-  transform:translateX(-50%);
-  background:var(--success);
-  color:white;
-  padding:14px 22px;
-  border-radius:30px;
-  opacity:0;
-  transition:.3s;
+position:fixed;
+bottom:30px;
+left:50%;
+transform:translateX(-50%);
+background:var(--success);
+color:white;
+padding:14px 22px;
+border-radius:30px;
+opacity:0;
+transition:.3s;
 }
 
 .toast.show{
-  opacity:1;
-  bottom:50px;
+opacity:1;
+bottom:50px;
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="logo"><i class="fa fa-store"></i> MyStore</div>
 
-  <div class="header-right">
-    <div class="icon-btn" onclick="UI.openCart()">
-      <i class="fa fa-cart-shopping"></i>
-      <span id="cartCount">0</span>
-    </div>
+<div class="logo">
+<i class="fa fa-store"></i> MyStore
+</div>
 
-    <div class="profile" onclick="UI.toggleProfile()">
-      <img id="avatar">
-      <div class="menu">
-        <a href="profile.html">My Profile</a>
-        <a href="orders.html">My Orders</a>
-        <a href="#" onclick="logout()">Logout</a>
-      </div>
-    </div>
-  </div>
+<div class="header-right">
+
+<div class="icon-btn" onclick="UI.openCart()">
+<i class="fa fa-cart-shopping"></i>
+<span id="cartCount">0</span>
+</div>
+
+<div class="profile" onclick="UI.toggleProfile(event)">
+<img id="avatar">
+<div class="menu">
+<a href="profile.html">My Profile</a>
+<a href="orders.html">My Orders</a>
+<a href="#" onclick="logout()">Logout</a>
+</div>
+</div>
+
+</div>
+
 </header>
 
 <div class="container">
-  <h3>Recommended Products</h3>
-  <div class="products" id="products"></div>
+
+<h3>Recommended Products</h3>
+
+<div class="search-bar">
+<input id="searchInput" placeholder="Search product...">
+</div>
+
+<div class="products" id="products"></div>
+
 </div>
 
 <div class="cart" id="cart">
-  <div class="cart-header">
-    <h3>Your Cart</h3>
-    <i class="fa fa-xmark" onclick="UI.closeCart()"></i>
-  </div>
 
-  <div class="cart-body" id="cartItems"></div>
-
-  <div class="cart-footer">
-    <strong>Total: $<span id="total">0</span></strong>
-    <button onclick="Order.checkout()">Checkout</button>
-  </div>
+<div class="cart-header">
+<h3>Your Cart</h3>
+<i class="fa fa-xmark" onclick="UI.closeCart()"></i>
 </div>
 
-<div class="toast" id="toast">Added to cart</div>
+<div class="cart-body" id="cartItems"></div>
+
+<div class="cart-footer">
+<strong>Total: $<span id="total">0</span></strong>
+<button onclick="Order.checkout()">Checkout</button>
+</div>
+
+</div>
+
+<div class="toast" id="toast">Added</div>
 
 <script>
-let CURRENT_UID=null;
+
+/* STORAGE */
 
 const Storage={
-  get:(k,f=[])=>JSON.parse(localStorage.getItem(k))||f,
-  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
-};
+get:(k,f=[])=>{
+try{
+const v=JSON.parse(localStorage.getItem(k))
+return v ?? f
+}catch{
+return f
+}
+},
+set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+}
+
+/* USER */
+
+function loadUser(){
+let user=Storage.get("susilUser",null)
+avatar.src = user?.photo || "https://i.pravatar.cc/150"
+}
+loadUser()
+
+/* PRODUCTS FROM ADMIN */
 
 const ProductService={
-  all:()=>Storage.get("products_v1",[])
-};
+
+convertAdminProduct(p){
+
+return{
+id:p.id || Date.now(),
+name:p.name,
+price:p.price,
+img:p.img,
+category:p.category || "general",
+description:p.desc || "",
+rating:4.5,
+stock:p.stock ?? 100
+}
+
+},
+
+all(){
+
+let adminProducts = Storage.get("products_v1",[])
+
+let converted = adminProducts.map(p=>this.convertAdminProduct(p))
+
+if(!converted.length){
+
+converted=[
+
+this.convertAdminProduct({
+id:1,
+name:"Gaming Headset",
+price:80,
+img:"https://picsum.photos/300?1",
+category:"gaming"
+}),
+
+this.convertAdminProduct({
+id:2,
+name:"Gaming Mouse",
+price:60,
+img:"https://picsum.photos/300?2"
+})
+
+]
+
+}
+
+return converted
+
+},
+
+find(id){
+return this.all().find(p=>p.id===id)
+},
+
+search(q){
+
+q=q.toLowerCase()
+
+return this.all().filter(p=>
+p.name.toLowerCase().includes(q) ||
+p.category.toLowerCase().includes(q)
+)
+
+}
+
+}
+
+/* CART */
 
 const CartService={
-  all:()=>Storage.get("cart",[]),
-  save:c=>Storage.set("cart",c)
-};
+all(){
+let cart=Storage.get("cart",[])
+cart=cart.filter(i=>i && i.id && i.qty>0)
+Storage.set("cart",cart)
+return cart
+},
+save:c=>Storage.set("cart",c)
+}
+
+/* UI */
 
 const UI={
-  renderProducts(){
-    products.innerHTML="";
-    ProductService.all().forEach((p,i)=>{
-      products.innerHTML+=`
-      <div class="card">
-        <img src="${p.img}">
-        <h4>${p.name}</h4>
-        <div class="price">$${p.price}</div>
-        <div class="actions">
-          <button class="buy" onclick="Cart.add(${i})">Add</button>
-          <button class="wish">❤</button>
-        </div>
-      </div>`;
-    });
-  },
 
-  renderCart(){
-    const c=CartService.all();
-    cartItems.innerHTML="";
-    let t=0;
-    c.forEach((x,i)=>{
-      t+=x.price*x.qty;
-      cartItems.innerHTML+=`
-      <div class="cart-item">
-        <img src="${x.img}">
-        <div>
-          <h5>${x.name}</h5>
-          <div>$${x.price}</div>
-          <div class="cart-controls">
-            <button class="qty-btn" onclick="Cart.dec(${i})">−</button>
-            <strong>${x.qty}</strong>
-            <button class="qty-btn" onclick="Cart.inc(${i})">+</button>
-          </div>
-        </div>
-      </div>`;
-    });
-    total.innerText=t;
-    cartCount.innerText=c.reduce((a,b)=>a+b.qty,0);
-  },
+renderProducts(list=null){
 
-  openCart(){cart.classList.add("open");this.renderCart();},
-  closeCart(){cart.classList.remove("open");},
-  toggleProfile(){document.querySelector(".profile").classList.toggle("open");},
+const data=list||ProductService.all()
 
-  toast(msg){
-    toast.innerText=msg;
-    toast.classList.add("show");
-    setTimeout(()=>toast.classList.remove("show"),2000);
-  }
-};
+products.innerHTML=""
+
+data.forEach(p=>{
+
+products.innerHTML+=`
+
+<div class="card">
+
+<img src="${p.img}" onerror="this.src='https://picsum.photos/200'">
+
+<h4>${p.name}</h4>
+
+<div class="price">$${p.price}</div>
+
+<div class="actions">
+
+<button class="buy" onclick="Cart.add(${p.id})">
+Add
+</button>
+
+<button class="wish">❤</button>
+
+</div>
+
+</div>
+
+`
+
+})
+
+},
+
+renderCart(){
+
+const c=CartService.all()
+
+cartItems.innerHTML=""
+
+let totalPrice=0
+
+if(!c.length){
+
+cartItems.innerHTML="<p style='opacity:.6'>Cart is empty</p>"
+
+}
+
+c.forEach(x=>{
+
+totalPrice+=x.price*x.qty
+
+cartItems.innerHTML+=`
+
+<div class="cart-item">
+
+<img src="${x.img}">
+
+<div>
+
+<h5>${x.name}</h5>
+
+<div>$${x.price}</div>
+
+<div class="cart-controls">
+
+<button class="qty-btn" onclick="Cart.dec(${x.id})">−</button>
+
+<strong>${x.qty}</strong>
+
+<button class="qty-btn" onclick="Cart.inc(${x.id})">+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`
+
+})
+
+total.innerText=totalPrice.toFixed(2)
+
+cartCount.innerText=c.reduce((a,b)=>a+b.qty,0)
+
+},
+
+openCart(){
+cart.classList.add("open")
+this.renderCart()
+},
+
+closeCart(){
+cart.classList.remove("open")
+},
+
+toggleProfile(e){
+e.stopPropagation()
+document.querySelector(".profile").classList.toggle("open")
+},
+
+toast(msg){
+
+toast.innerText=msg
+toast.classList.add("show")
+
+setTimeout(()=>{
+toast.classList.remove("show")
+},2000)
+
+}
+
+}
+
+/* CART */
 
 const Cart={
-  add(i){
-    const p=ProductService.all()[i];
-    const c=CartService.all();
-    const f=c.find(x=>x.name===p.name);
-    f?f.qty++:c.push({...p,qty:1});
-    CartService.save(c);
-    UI.renderCart();
-    UI.toast("Added to cart");
-  },
-  inc:i=>{const c=CartService.all();c[i].qty++;CartService.save(c);UI.renderCart();},
-  dec:i=>{const c=CartService.all();c[i].qty--;if(c[i].qty<=0)c.splice(i,1);CartService.save(c);UI.renderCart();}
-};
+
+add(id){
+
+let cart=CartService.all()
+
+let product=ProductService.find(id)
+
+let exist=cart.find(i=>i.id===id)
+
+if(exist){
+exist.qty++
+}else{
+cart.push({...product,qty:1})
+}
+
+CartService.save(cart)
+
+UI.renderCart()
+
+UI.toast("Added to cart")
+
+},
+
+inc(id){
+
+let cart=CartService.all()
+let item=cart.find(i=>i.id===id)
+
+item.qty++
+
+CartService.save(cart)
+
+UI.renderCart()
+
+},
+
+dec(id){
+
+let cart=CartService.all()
+
+let item=cart.find(i=>i.id===id)
+
+item.qty--
+
+if(item.qty<=0){
+cart=cart.filter(i=>i.id!==id)
+}
+
+CartService.save(cart)
+
+UI.renderCart()
+
+}
+
+}
+
+/* SEARCH */
+
+searchInput.addEventListener("input",()=>{
+
+let q=searchInput.value.toLowerCase()
+
+let list=ProductService.search(q)
+
+UI.renderProducts(list)
+
+})
+
+/* ORDER */
 
 const Order={
-  checkout(){
-    if(!CartService.all().length) return UI.toast("Cart empty");
-    location.href="checkout.html";
-  }
-};
-</script>
+checkout(){
+if(!CartService.all().length){
+return UI.toast("Cart empty")
+}
+location.href="checkout.html"
+}
+}
 
-<!-- ================= FIREBASE ================= -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+/* INIT */
 
-const app=initializeApp({
-  apiKey:"AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
-  authDomain:"susil-store.firebaseapp.com",
-  projectId:"susil-store"
-});
+UI.renderProducts()
+UI.renderCart()
 
-const auth=getAuth(app);
-onAuthStateChanged(auth,u=>{
-  if(!u) location.href="index.html";
-  avatar.src=u.photoURL||"https://i.pravatar.cc/150";
-  UI.renderProducts();
-  UI.renderCart();
-});
+function logout(){
+localStorage.removeItem("susilUser")
+location.href="index.html"
+}
 
-window.logout=async()=>{await signOut(auth);location.href="index.html";}
+document.addEventListener("click",()=>{
+document.querySelector(".profile").classList.remove("open")
+})
+
 </script>
 
 </body>

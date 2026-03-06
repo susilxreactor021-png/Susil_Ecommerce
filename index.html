@@ -1,326 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-<!-- ======================================================
-     META CONFIG
-====================================================== -->
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Susil Store - Premium electronics with secure Google login">
-<meta name="keywords" content="Susil Store, electronics, login, google auth, ecommerce">
-<meta name="author" content="Susil Thapa">
-<meta name="theme-color" content="#f97316">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Susil Store | Login</title>
 
-<!-- ======================================================
-     TAILWIND CDN
-====================================================== -->
+<meta name="description" content="Susil Store Premium Electronics">
+<meta name="theme-color" content="#2563eb">
+
+<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- ======================================================
-     TAILWIND CONFIG
-====================================================== -->
 <script>
 tailwind.config = {
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ['Inter','system-ui']
-      }
-    }
-  }
+theme:{
+extend:{
+colors:{
+brand:"#2563eb"
+}
+}
+}
 }
 </script>
 
-<!-- ======================================================
-     CUSTOM STYLES (DESIGN UNCHANGED)
-====================================================== -->
+<!-- Google Identity -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <style>
 
-/* ------------------------------------------------------
-   GLOBAL RESET
------------------------------------------------------- */
 *{
-  scroll-behavior:smooth;
+scroll-behavior:smooth;
 }
 
-/* ------------------------------------------------------
-   SCROLL REVEAL
------------------------------------------------------- */
 .reveal{
-  opacity:0;
-  transform:translateY(40px);
-  transition:all .8s ease;
+opacity:0;
+transform:translateY(40px);
+transition:.8s;
 }
+
 .reveal.show{
-  opacity:1;
-  transform:translateY(0);
+opacity:1;
+transform:none;
 }
 
-/* ------------------------------------------------------
-   BUTTON INTERACTION
------------------------------------------------------- */
 button:active{
-  transform:scale(0.98);
+transform:scale(.97);
 }
 
-/* ------------------------------------------------------
-   IMAGE SAFETY
------------------------------------------------------- */
-img{
-  user-select:none;
-  pointer-events:none;
+.loading{
+display:none;
+margin-top:12px;
+color:#2563eb;
+font-weight:600;
+}
+
+/* Glass Login Card */
+
+.login-card{
+backdrop-filter:blur(10px);
+background:rgba(255,255,255,0.95);
+border:1px solid rgba(255,255,255,.2);
+}
+
+/* Smooth hover */
+
+.feature-card{
+transition:.3s;
+}
+
+.feature-card:hover{
+transform:translateY(-8px);
+box-shadow:0 20px 40px rgba(0,0,0,.15);
+}
+
+/* Mobile image scaling */
+
+.hero-img{
+max-height:420px;
+object-fit:cover;
+}
+
+/* Google button wrapper */
+
+#googleBtn{
+display:flex;
+justify-content:center;
 }
 
 </style>
+
 </head>
 
-<body class="bg-gradient-to-br from-orange-500 via-orange-400 to-red-500 overflow-x-hidden">
+<body class="bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 overflow-x-hidden">
 
-<!-- ======================================================
-     ACCESSIBILITY
-====================================================== -->
-<a href="#login" class="sr-only">Skip to login</a>
+<!-- HERO -->
 
-<!-- ======================================================
-     HERO SECTION
-====================================================== -->
 <section class="min-h-screen flex items-center justify-center text-white px-6 reveal">
 
-  <div class="max-w-5xl grid lg:grid-cols-2 gap-12 items-center">
+<div class="max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
 
-    <div>
-      <h1 class="text-4xl lg:text-5xl font-extrabold mb-6">
-        Welcome to
-        <span class="text-yellow-300">Susil Store</span>
-      </h1>
+<div class="text-center lg:text-left">
 
-      <p class="text-lg opacity-90 mb-8">
-        Shop premium electronics with secure login,
-        fast delivery, and trusted payments.
-      </p>
+<h1 class="text-4xl lg:text-5xl font-extrabold mb-6">
+Welcome to
+<span class="text-yellow-300">Susil Store</span>
+</h1>
 
-      <a href="#login"
-         class="inline-block bg-white text-orange-600 px-6 py-3 rounded-xl font-bold">
-        Get Started
-      </a>
-    </div>
+<p class="text-lg opacity-90 mb-8">
+Shop premium electronics with secure login,
+fast delivery and trusted payments.
+</p>
 
-    <img src="Images/laptop rog strix.jpg"
-         class="rounded-3xl shadow-2xl reveal"
-         alt="Laptop">
+<a href="#login"
+class="bg-white text-blue-600 px-6 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition">
+Get Started
+</a>
 
-  </div>
+</div>
+
+<img
+src="Images/laptop rog strix.jpg"
+class="rounded-3xl shadow-2xl hero-img w-full"
+alt="Laptop">
+
+</div>
+
 </section>
 
-<!-- ======================================================
-     FEATURES
-====================================================== -->
+<!-- FEATURES -->
+
 <section class="bg-white py-20">
-  <div class="max-w-6xl mx-auto px-6">
 
-    <h2 class="text-3xl font-extrabold text-center mb-12 reveal">
-      Why Choose Susil Store?
-    </h2>
+<div class="max-w-6xl mx-auto px-6">
 
-    <div class="grid md:grid-cols-3 gap-8">
+<h2 class="text-3xl font-extrabold text-center mb-12 reveal">
+Why Choose Susil Store?
+</h2>
 
-      <div class="rounded-2xl shadow-lg p-6 text-center reveal">
-        <img src="Images/Fast Delivery.avif" class="h-40 mx-auto mb-4 rounded-xl">
-        <h3 class="font-bold text-lg mb-2">Fast Delivery</h3>
-        <p class="text-gray-500 text-sm">Lightning-fast delivery across the country.</p>
-      </div>
+<div class="grid md:grid-cols-3 gap-8">
 
-      <div class="rounded-2xl shadow-lg p-6 text-center reveal">
-        <img src="Images/Secure Payments.webp" class="h-40 mx-auto mb-4 rounded-xl">
-        <h3 class="font-bold text-lg mb-2">Secure Payments</h3>
-        <p class="text-gray-500 text-sm">Google-secured authentication and payments.</p>
-      </div>
+<div class="shadow-lg rounded-2xl p-6 text-center reveal feature-card">
 
-      <div class="rounded-2xl shadow-lg p-6 text-center reveal">
-        <img src="Images/Top Quality.jpg" class="h-40 mx-auto mb-4 rounded-xl">
-        <h3 class="font-bold text-lg mb-2">Top Quality</h3>
-        <p class="text-gray-500 text-sm">Premium, verified, and trusted products.</p>
-      </div>
+<img src="Images/Fast Delivery.avif"
+class="h-40 mx-auto mb-4 rounded-xl object-cover">
 
-    </div>
-  </div>
+<h3 class="font-bold mb-2">
+Fast Delivery
+</h3>
+
+<p class="text-gray-500 text-sm">
+Lightning-fast delivery across the country.
+</p>
+
+</div>
+
+<div class="shadow-lg rounded-2xl p-6 text-center reveal feature-card">
+
+<img src="Images/Secure Payments.webp"
+class="h-40 mx-auto mb-4 rounded-xl object-cover">
+
+<h3 class="font-bold mb-2">
+Secure Login
+</h3>
+
+<p class="text-gray-500 text-sm">
+Google secured authentication.
+</p>
+
+</div>
+
+<div class="shadow-lg rounded-2xl p-6 text-center reveal feature-card">
+
+<img src="Images/Top Quality.jpg"
+class="h-40 mx-auto mb-4 rounded-xl object-cover">
+
+<h3 class="font-bold mb-2">
+Top Quality
+</h3>
+
+<p class="text-gray-500 text-sm">
+Premium verified products.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
 </section>
 
-<!-- ======================================================
-     PRODUCTS
-====================================================== -->
-<section class="py-20 bg-gray-50">
-  <div class="max-w-6xl mx-auto px-6">
+<!-- PRODUCTS -->
 
-    <h2 class="text-3xl font-extrabold text-center mb-12 reveal">
-      Popular Products
-    </h2>
+<section class="bg-gray-50 py-20">
 
-    <div class="grid md:grid-cols-3 gap-8">
+<div class="max-w-6xl mx-auto px-6">
 
-      <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
-        <img src="Images/ipad 10th generation.jpg" class="rounded-xl mb-4">
-        <h4 class="font-bold">iPad 10th Generation</h4>
-        <p class="text-sm text-gray-500">Powerful. Portable. Modern.</p>
-      </div>
+<h2 class="text-3xl font-extrabold text-center mb-12 reveal">
+Popular Products
+</h2>
 
-      <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
-        <img src="Images/samsung s25 ultra.jpg" class="rounded-xl mb-4">
-        <h4 class="font-bold">Samsung S25 Ultra</h4>
-        <p class="text-sm text-gray-500">Next-gen smartphone experience.</p>
-      </div>
+<div class="grid md:grid-cols-3 gap-8">
 
-      <div class="bg-white rounded-2xl shadow-lg p-4 reveal">
-        <img src="Images/laptop rog strix.jpg" class="rounded-xl mb-4">
-        <h4 class="font-bold">ROG Strix Laptop</h4>
-        <p class="text-sm text-gray-500">High-performance gaming beast.</p>
-      </div>
+<div class="bg-white shadow-lg rounded-2xl p-4 reveal feature-card">
 
-    </div>
-  </div>
+<img src="Images/ipad 10th generation.jpg"
+class="rounded-xl mb-4 w-full h-56 object-cover">
+
+<h4 class="font-bold">
+iPad 10th Generation
+</h4>
+
+<p class="text-gray-500 text-sm">
+Powerful. Portable. Modern.
+</p>
+
+</div>
+
+<div class="bg-white shadow-lg rounded-2xl p-4 reveal feature-card">
+
+<img src="Images/samsung s25 ultra.jpg"
+class="rounded-xl mb-4 w-full h-56 object-cover">
+
+<h4 class="font-bold">
+Samsung S25 Ultra
+</h4>
+
+<p class="text-gray-500 text-sm">
+Next-gen smartphone experience.
+</p>
+
+</div>
+
+<div class="bg-white shadow-lg rounded-2xl p-4 reveal feature-card">
+
+<img src="Images/laptop rog strix.jpg"
+class="rounded-xl mb-4 w-full h-56 object-cover">
+
+<h4 class="font-bold">
+ROG Strix Laptop
+</h4>
+
+<p class="text-gray-500 text-sm">
+High-performance gaming beast.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
 </section>
 
-<!-- ======================================================
-     LOGIN
-====================================================== -->
-<section id="login" class="py-20 flex justify-center reveal">
-  <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md text-center">
+<!-- LOGIN -->
 
-    <h2 class="text-3xl font-extrabold text-orange-600 mb-2">Login</h2>
-    <p class="text-gray-500 mb-6">Continue with Google</p>
+<section id="login" class="py-20 flex justify-center reveal px-6">
 
-    <button id="googleLogin"
-      class="flex items-center justify-center gap-3 w-full border py-3 rounded-xl font-semibold hover:bg-gray-50 transition">
-      <img src="https://img.icons8.com/color/48/google-logo.png" class="h-6">
-      Continue with Google
-    </button>
+<div class="login-card rounded-3xl shadow-2xl p-10 max-w-md w-full text-center">
 
-  </div>
+<h2 class="text-3xl font-extrabold text-blue-600 mb-2">
+Login
+</h2>
+
+<p class="text-gray-500 mb-6">
+Continue with Google
+</p>
+
+<div id="googleBtn"></div>
+
+<div id="loading" class="loading">
+Signing you in...
+</div>
+
+</div>
+
 </section>
 
-<!-- ======================================================
-     FOOTER
-====================================================== -->
-<footer class="text-center text-white/80 text-sm py-6 reveal">
-  © 2026 Susil Store. All rights reserved.
+<footer class="text-center text-white/80 text-sm py-6">
+© 2026 Susil Store
 </footer>
 
-<!-- ======================================================
-     SCROLL REVEAL SCRIPT
-====================================================== -->
+<!-- SCROLL REVEAL -->
+
 <script>
+
 const observer=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.classList.add("show");
-    }
-  });
-},{threshold:0.15});
-document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+entries.forEach(e=>{
+if(e.isIntersecting){
+e.target.classList.add("show")
+}
+})
+},{threshold:.2})
+
+document.querySelectorAll(".reveal").forEach(el=>{
+observer.observe(el)
+})
+
 </script>
 
-<!-- ======================================================
-     FIREBASE AUTH (ERROR FIX ONLY)
-====================================================== -->
-<script type="module">
+<!-- GOOGLE LOGIN -->
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  onAuthStateChanged,
-  setPersistence,
-  browserSessionPersistence
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+<script>
 
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const CLIENT_ID="945250569256-doihroh8g5rv6o5htgongffgpgplkqnp.apps.googleusercontent.com";
 
-/* FIREBASE CONFIG */
-const firebaseConfig={
-  apiKey:"AIzaSyCemy1bSdqnb8xWEYfFROPEme7xlm8Ji0Q",
-  authDomain:"susil-store.firebaseapp.com",
-  projectId:"susil-store",
-  storageBucket:"susil-store.firebasestorage.app",
-  messagingSenderId:"502951690223",
-  appId:"1:502951690223:web:73152503cc08c4e8ab801a"
-};
+function decodeJWT(token){
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-const provider=new GoogleAuthProvider();
+const base64Url = token.split('.')[1];
+const base64 = base64Url.replace(/-/g,'+').replace(/_/g,'/');
 
-/* 🔒 FIX: SESSION PERSISTENCE */
-await setPersistence(auth,browserSessionPersistence);
+const jsonPayload = decodeURIComponent(
+atob(base64).split('').map(function(c){
+return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+}).join('')
+);
 
-/* DEVICE CHECK */
-const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+return JSON.parse(jsonPayload);
 
-/* SAVE USER */
-async function saveUser(user){
-  const ref=doc(db,"users",user.uid);
-  if(!(await getDoc(ref)).exists()){
-    await setDoc(ref,{
-      uid:user.uid,
-      name:user.displayName,
-      email:user.email,
-      photo:user.photoURL,
-      role:"User",
-      status:"Active",
-      createdAt:serverTimestamp()
-    });
-  }
 }
 
-/* LOGIN */
-document.getElementById("googleLogin").onclick=async()=>{
-  try{
-    if(isMobile){
-      await signInWithRedirect(auth,provider);
-    }else{
-      const res=await signInWithPopup(auth,provider);
-      await saveUser(res.user);
-      location.href="dashboard.html";
-    }
-  }catch(e){
-    alert("Login failed");
-    console.error(e);
-  }
+function handleCredentialResponse(response){
+
+document.getElementById("loading").style.display="block";
+
+const data = decodeJWT(response.credential);
+
+const user={
+name:data.name,
+email:data.email,
+photo:data.picture,
+id:data.sub
 };
 
-/* REDIRECT RESULT */
-getRedirectResult(auth).then(async res=>{
-  if(res?.user){
-    await saveUser(res.user);
-    location.href="dashboard.html";
-  }
+localStorage.setItem("susilUser",JSON.stringify(user));
+
+setTimeout(()=>{
+window.location.href="dashboard.html";
+},1000);
+
+}
+
+window.onload=function(){
+
+const existingUser=localStorage.getItem("susilUser");
+
+if(existingUser){
+window.location.href="dashboard.html";
+return;
+}
+
+google.accounts.id.initialize({
+client_id:CLIENT_ID,
+callback:handleCredentialResponse
 });
 
-/* SAFE AUTO LOGIN */
-onAuthStateChanged(auth,user=>{
-  if(user){
-    setTimeout(()=>location.href="dashboard.html",500);
-  }
-});
+google.accounts.id.renderButton(
+document.getElementById("googleBtn"),
+{
+theme:"outline",
+size:"large",
+shape:"pill",
+text:"signin_with",
+width:"320"
+}
+);
+
+google.accounts.id.prompt();
+
+};
 
 </script>
-
-<!-- ======================================================
-     END OF FILE
-     (500+ LINES • DESIGN UNCHANGED • ERROR FIXED)
-====================================================== -->
 
 </body>
 </html>
